@@ -1,0 +1,4 @@
+services:
+  edge:
+    volumes:
+      - ./infra/nginx/defense-trace.conf:/etc/nginx/defense/trace.conf:ro

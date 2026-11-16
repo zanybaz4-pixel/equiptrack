@@ -1,0 +1,1 @@
+{"database_bytes" : 8787635, "assets" : 50, "borrowers" : 50, "max_connections" : "100", "shared_buffers" : "128MB", "track_io_timing" : "off"}

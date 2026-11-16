@@ -1,0 +1,526 @@
+{
+  "tested_on": "2026-11-15",
+  "environment": "PostgreSQL 17.12 for Windows with equiptrack_app runtime role, loopback Uvicorn HTTPS, curl with explicit CA",
+  "operations_with_success_and_failure": 25,
+  "cases": [
+    {
+      "case": "liveness",
+      "method": "GET",
+      "path": "/health/live",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "liveness wrong method",
+      "method": "POST",
+      "path": "/health/live",
+      "expected": 405,
+      "actual": 405,
+      "error": "method_not_allowed"
+    },
+    {
+      "case": "readiness",
+      "method": "GET",
+      "path": "/health/ready",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "no session",
+      "method": "GET",
+      "path": "/auth/me",
+      "expected": 401,
+      "actual": 401,
+      "error": "unauthenticated"
+    },
+    {
+      "case": "bad JSON",
+      "method": "POST",
+      "path": "/auth/login",
+      "expected": 400,
+      "actual": 400,
+      "error": "bad_request"
+    },
+    {
+      "case": "wrong password",
+      "method": "POST",
+      "path": "/auth/login",
+      "expected": 401,
+      "actual": 401,
+      "error": "unauthenticated"
+    },
+    {
+      "case": "student login",
+      "method": "POST",
+      "path": "/auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "faculty login",
+      "method": "POST",
+      "path": "/auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "admin login",
+      "method": "POST",
+      "path": "/auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "current session",
+      "method": "GET",
+      "path": "/auth/me",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "no category session",
+      "method": "GET",
+      "path": "/categories",
+      "expected": 401,
+      "actual": 401,
+      "error": "unauthenticated"
+    },
+    {
+      "case": "category list",
+      "method": "GET",
+      "path": "/categories",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "no catalog session",
+      "method": "GET",
+      "path": "/equipment",
+      "expected": 401,
+      "actual": 401,
+      "error": "unauthenticated"
+    },
+    {
+      "case": "catalog list",
+      "method": "GET",
+      "path": "/equipment",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "catalog detail",
+      "method": "GET",
+      "path": "/equipment/1",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "invalid equipment ID",
+      "method": "GET",
+      "path": "/equipment/0",
+      "expected": 422,
+      "actual": 422,
+      "error": "validation_error"
+    },
+    {
+      "case": "catalog rejects Unix timestamp strings",
+      "method": "GET",
+      "path": "/equipment?borrow_at=1969693200&due_at=1969696800",
+      "expected": 422,
+      "actual": 422,
+      "error": "validation_error"
+    },
+    {
+      "case": "profile",
+      "method": "GET",
+      "path": "/profile",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "profile without session",
+      "method": "GET",
+      "path": "/profile",
+      "expected": 401,
+      "actual": 401,
+      "error": "unauthenticated"
+    },
+    {
+      "case": "profile update without CSRF",
+      "method": "PATCH",
+      "path": "/profile",
+      "expected": 403,
+      "actual": 403,
+      "error": "forbidden"
+    },
+    {
+      "case": "profile update",
+      "method": "PATCH",
+      "path": "/profile",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "dashboard",
+      "method": "GET",
+      "path": "/dashboard",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "dashboard without session",
+      "method": "GET",
+      "path": "/dashboard",
+      "expected": 401,
+      "actual": 401,
+      "error": "unauthenticated"
+    },
+    {
+      "case": "create category",
+      "method": "POST",
+      "path": "/categories",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "borrower cannot create category",
+      "method": "POST",
+      "path": "/categories",
+      "expected": 403,
+      "actual": 403,
+      "error": "forbidden"
+    },
+    {
+      "case": "create equipment",
+      "method": "POST",
+      "path": "/equipment",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "duplicate asset code",
+      "method": "POST",
+      "path": "/equipment",
+      "expected": 409,
+      "actual": 409,
+      "error": "conflict"
+    },
+    {
+      "case": "update equipment",
+      "method": "PUT",
+      "path": "/equipment/9",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "borrower cannot edit equipment",
+      "method": "PUT",
+      "path": "/equipment/9",
+      "expected": 403,
+      "actual": 403,
+      "error": "forbidden"
+    },
+    {
+      "case": "list accounts",
+      "method": "GET",
+      "path": "/users",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "borrower cannot list accounts",
+      "method": "GET",
+      "path": "/users",
+      "expected": 403,
+      "actual": 403,
+      "error": "forbidden"
+    },
+    {
+      "case": "create account",
+      "method": "POST",
+      "path": "/users",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "duplicate email",
+      "method": "POST",
+      "path": "/users",
+      "expected": 409,
+      "actual": 409,
+      "error": "conflict"
+    },
+    {
+      "case": "deactivate account",
+      "method": "PUT",
+      "path": "/users/4",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "borrower cannot deactivate accounts",
+      "method": "PUT",
+      "path": "/users/4",
+      "expected": 403,
+      "actual": 403,
+      "error": "forbidden"
+    },
+    {
+      "case": "inactive login",
+      "method": "POST",
+      "path": "/auth/login",
+      "expected": 401,
+      "actual": 401,
+      "error": "unauthenticated"
+    },
+    {
+      "case": "request needs session",
+      "method": "GET",
+      "path": "/requests",
+      "expected": 401,
+      "actual": 401,
+      "error": "unauthenticated"
+    },
+    {
+      "case": "request list",
+      "method": "GET",
+      "path": "/requests",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "reverse date order",
+      "method": "POST",
+      "path": "/requests",
+      "expected": 422,
+      "actual": 422,
+      "error": "validation_error"
+    },
+    {
+      "case": "request rejects Unix timestamp strings",
+      "method": "POST",
+      "path": "/requests",
+      "expected": 422,
+      "actual": 422,
+      "error": "validation_error"
+    },
+    {
+      "case": "create request",
+      "method": "POST",
+      "path": "/requests",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "second pending request",
+      "method": "POST",
+      "path": "/requests",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "create cancelable request",
+      "method": "POST",
+      "path": "/requests",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "nonowner cannot cancel",
+      "method": "DELETE",
+      "path": "/requests/3",
+      "expected": 404,
+      "actual": 404,
+      "error": "not_found"
+    },
+    {
+      "case": "owner cancels pending",
+      "method": "DELETE",
+      "path": "/requests/3",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "canceled request is retained",
+      "method": "GET",
+      "path": "/requests/3",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "owner reads request",
+      "method": "GET",
+      "path": "/requests/1",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "nonowner cannot read request",
+      "method": "GET",
+      "path": "/requests/1",
+      "expected": 404,
+      "actual": 404,
+      "error": "not_found"
+    },
+    {
+      "case": "borrower cannot approve",
+      "method": "PATCH",
+      "path": "/requests/1/decision",
+      "expected": 403,
+      "actual": 403,
+      "error": "forbidden"
+    },
+    {
+      "case": "concurrent requests",
+      "method": "PATCH",
+      "paths": [
+        "/requests/1/decision",
+        "/requests/2/decision"
+      ],
+      "expected": [
+        200,
+        409
+      ],
+      "actual": [
+        200,
+        409
+      ]
+    },
+    {
+      "case": "reject remaining request",
+      "method": "PATCH",
+      "path": "/requests/2/decision",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "period availability",
+      "method": "GET",
+      "path": "/equipment/1?borrow_at=2026-11-15T12%3A19%3A36.193149%2B00%3A00&due_at=2026-11-15T12%3A34%3A36.193149%2B00%3A00",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "cannot request reserved interval",
+      "method": "POST",
+      "path": "/requests",
+      "expected": 409,
+      "actual": 409,
+      "error": "conflict"
+    },
+    {
+      "case": "borrower cannot release",
+      "method": "POST",
+      "path": "/requests/1/release",
+      "expected": 403,
+      "actual": 403,
+      "error": "forbidden"
+    },
+    {
+      "case": "concurrent requests",
+      "method": "POST",
+      "paths": [
+        "/requests/1/release",
+        "/requests/1/release"
+      ],
+      "expected": [
+        201,
+        409
+      ],
+      "actual": [
+        201,
+        409
+      ]
+    },
+    {
+      "case": "active custody",
+      "method": "GET",
+      "path": "/requests?custody=active",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "damaged return",
+      "method": "PUT",
+      "path": "/requests/1/return",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "repeat return rejected",
+      "method": "PUT",
+      "path": "/requests/1/return",
+      "expected": 409,
+      "actual": 409,
+      "error": "conflict"
+    },
+    {
+      "case": "returned equipment marked maintenance",
+      "method": "GET",
+      "path": "/equipment/1",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "audit log contains lifecycle",
+      "method": "GET",
+      "path": "/audit-logs?entity_id=1",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "borrower cannot view audit logs",
+      "method": "GET",
+      "path": "/audit-logs",
+      "expected": 403,
+      "actual": 403,
+      "error": "forbidden"
+    },
+    {
+      "case": "logout requires CSRF",
+      "method": "POST",
+      "path": "/auth/logout",
+      "expected": 403,
+      "actual": 403,
+      "error": "forbidden"
+    },
+    {
+      "case": "logout",
+      "method": "POST",
+      "path": "/auth/logout",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "logged-out cookie rejected",
+      "method": "GET",
+      "path": "/auth/me",
+      "expected": 401,
+      "actual": 401,
+      "error": "unauthenticated"
+    },
+    {
+      "case": "ready while PostgreSQL stopped",
+      "method": "GET",
+      "path": "/health/ready",
+      "expected": 503,
+      "actual": 503,
+      "error": "database_unavailable"
+    },
+    {
+      "case": "live while PostgreSQL stopped",
+      "method": "GET",
+      "path": "/health/live",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "case": "injected liveness failure in isolated test process",
+      "method": "GET",
+      "path": "/health/live",
+      "expected": 500,
+      "actual": 500,
+      "error": "internal_error"
+    }
+  ]
+}

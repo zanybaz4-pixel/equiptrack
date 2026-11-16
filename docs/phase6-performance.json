@@ -1,0 +1,273 @@
+{
+  "run_id": "20261115191737_18137",
+  "windows": {
+    "processor": {
+      "Name": "AMD Ryzen 5 5600X 6-Core Processor             ",
+      "NumberOfCores": 6,
+      "NumberOfLogicalProcessors": 12
+    },
+    "memoryBytes": 34282176512,
+    "os": {
+      "Caption": "Microsoft Windows 11 Home Single Language",
+      "Version": "10.0.26300",
+      "BuildNumber": "26300"
+    }
+  },
+  "wsl": {
+    "engine": "29.9.3",
+    "os": "Ubuntu 24.04.5 LTS",
+    "logical_cpus": 12,
+    "memory_bytes": 16731877376,
+    "explicit_container_limits": false
+  },
+  "database": {
+    "database_bytes": 8787635,
+    "assets": 50,
+    "borrowers": 50,
+    "max_connections": "100",
+    "shared_buffers": "128MB",
+    "track_io_timing": "off"
+  },
+  "runs": [
+    {
+      "mode": "read",
+      "users": 1,
+      "start_utc": "2026-11-15T19:18:24Z",
+      "end_utc": "2026-11-15T19:18:58Z",
+      "scenario_seconds": 33.200061149,
+      "requests": 30,
+      "requests_per_second": 0.9036127935235329,
+      "average_ms": 7.8939686333333325,
+      "p95_ms": 8.83119865,
+      "error_percent": 0.0,
+      "validation_error_percent": 0.0,
+      "confirmed_writes": 0,
+      "cpu": {
+        "api": {
+          "mean": 3.0388888888888888,
+          "max": 21.49,
+          "samples": 9
+        },
+        "db": {
+          "mean": 1.4,
+          "max": 3.46,
+          "samples": 9
+        },
+        "edge": {
+          "mean": 0.05444444444444445,
+          "max": 0.07,
+          "samples": 9
+        },
+        "web": {
+          "mean": 0.0,
+          "max": 0.0,
+          "samples": 9
+        }
+      },
+      "pg_samples": 9,
+      "pg_max_lock_waits": 0,
+      "pg_max_io_waits": 0,
+      "database_bytes": 8820403
+    },
+    {
+      "mode": "read",
+      "users": 10,
+      "start_utc": "2026-11-15T19:19:05Z",
+      "end_utc": "2026-11-15T19:19:39Z",
+      "scenario_seconds": 33.368087118000005,
+      "requests": 300,
+      "requests_per_second": 8.990626251337277,
+      "average_ms": 11.903231006666669,
+      "p95_ms": 21.35006145000001,
+      "error_percent": 0.0,
+      "validation_error_percent": 0.0,
+      "confirmed_writes": 0,
+      "cpu": {
+        "api": {
+          "mean": 6.278888888888889,
+          "max": 7.22,
+          "samples": 9
+        },
+        "db": {
+          "mean": 3.9855555555555555,
+          "max": 10.44,
+          "samples": 9
+        },
+        "edge": {
+          "mean": 0.35333333333333333,
+          "max": 0.43,
+          "samples": 9
+        },
+        "web": {
+          "mean": 0.0,
+          "max": 0.0,
+          "samples": 9
+        }
+      },
+      "pg_samples": 9,
+      "pg_max_lock_waits": 0,
+      "pg_max_io_waits": 0,
+      "database_bytes": 8820403
+    },
+    {
+      "mode": "read",
+      "users": 50,
+      "start_utc": "2026-11-15T19:19:46Z",
+      "end_utc": "2026-11-15T19:20:20Z",
+      "scenario_seconds": 33.90125655,
+      "requests": 1500,
+      "requests_per_second": 44.2461475664683,
+      "average_ms": 23.104550493999962,
+      "p95_ms": 140.61957084999997,
+      "error_percent": 0.0,
+      "validation_error_percent": 0.0,
+      "confirmed_writes": 0,
+      "cpu": {
+        "api": {
+          "mean": 32.57555555555555,
+          "max": 50.76,
+          "samples": 9
+        },
+        "db": {
+          "mean": 14.401111111111112,
+          "max": 27.33,
+          "samples": 9
+        },
+        "edge": {
+          "mean": 2.5844444444444443,
+          "max": 9.18,
+          "samples": 9
+        },
+        "web": {
+          "mean": 0.0,
+          "max": 0.0,
+          "samples": 9
+        }
+      },
+      "pg_samples": 9,
+      "pg_max_lock_waits": 0,
+      "pg_max_io_waits": 0,
+      "database_bytes": 8836787
+    },
+    {
+      "mode": "write",
+      "users": 1,
+      "start_utc": "2026-11-15T19:20:27Z",
+      "end_utc": "2026-11-15T19:21:01Z",
+      "scenario_seconds": 33.254819432999994,
+      "requests": 30,
+      "requests_per_second": 0.902124880288175,
+      "average_ms": 9.566889300000001,
+      "p95_ms": 10.63046845,
+      "error_percent": 0.0,
+      "validation_error_percent": 0.0,
+      "confirmed_writes": 30,
+      "cpu": {
+        "api": {
+          "mean": 1.9866666666666666,
+          "max": 11.19,
+          "samples": 9
+        },
+        "db": {
+          "mean": 0.5755555555555556,
+          "max": 3.31,
+          "samples": 9
+        },
+        "edge": {
+          "mean": 0.044444444444444446,
+          "max": 0.05,
+          "samples": 9
+        },
+        "web": {
+          "mean": 0.0,
+          "max": 0.0,
+          "samples": 9
+        }
+      },
+      "pg_samples": 9,
+      "pg_max_lock_waits": 0,
+      "pg_max_io_waits": 0,
+      "database_bytes": 8918707
+    },
+    {
+      "mode": "write",
+      "users": 10,
+      "start_utc": "2026-11-15T19:21:08Z",
+      "end_utc": "2026-11-15T19:21:42Z",
+      "scenario_seconds": 33.67893992,
+      "requests": 300,
+      "requests_per_second": 8.907643789044771,
+      "average_ms": 20.59663620333333,
+      "p95_ms": 41.587771200000006,
+      "error_percent": 0.0,
+      "validation_error_percent": 0.0,
+      "confirmed_writes": 300,
+      "cpu": {
+        "api": {
+          "mean": 8.528888888888888,
+          "max": 10.35,
+          "samples": 9
+        },
+        "db": {
+          "mean": 2.931111111111111,
+          "max": 7.11,
+          "samples": 9
+        },
+        "edge": {
+          "mean": 0.37555555555555553,
+          "max": 0.45,
+          "samples": 9
+        },
+        "web": {
+          "mean": 0.0,
+          "max": 0.0,
+          "samples": 9
+        }
+      },
+      "pg_samples": 9,
+      "pg_max_lock_waits": 0,
+      "pg_max_io_waits": 0,
+      "database_bytes": 9238195
+    },
+    {
+      "mode": "write",
+      "users": 50,
+      "start_utc": "2026-11-15T19:21:53Z",
+      "end_utc": "2026-11-15T19:22:27Z",
+      "scenario_seconds": 33.936095678,
+      "requests": 1483,
+      "requests_per_second": 43.699782499181104,
+      "average_ms": 28.677964248820015,
+      "p95_ms": 134.90297779999977,
+      "error_percent": 0.0,
+      "validation_error_percent": 0.0,
+      "confirmed_writes": 1483,
+      "cpu": {
+        "api": {
+          "mean": 40.647777777777776,
+          "max": 61.95,
+          "samples": 9
+        },
+        "db": {
+          "mean": 10.62111111111111,
+          "max": 34.67,
+          "samples": 9
+        },
+        "edge": {
+          "mean": 1.7,
+          "max": 1.81,
+          "samples": 9
+        },
+        "web": {
+          "mean": 0.0,
+          "max": 0.0,
+          "samples": 9
+        }
+      },
+      "pg_samples": 9,
+      "pg_max_lock_waits": 0,
+      "pg_max_io_waits": 0,
+      "database_bytes": 10106547
+    }
+  ]
+}

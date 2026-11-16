@@ -1,0 +1,23 @@
+{
+  "archive": "equiptrack-20261115T165742Z-FpxYDrN.dump",
+  "archive_sha256": "82ede3207074617e39086cd147cc618628715521e5b0ea1ba8cfba92980d65c1",
+  "restored_database": "equiptrack_restore_phase5_20261115165743",
+  "restored_counts_and_schema": {
+    "revision": "0002_sessions",
+    "users": 4,
+    "equipment": 9,
+    "categories": 5,
+    "requests": 3,
+    "loans": 1,
+    "audit": 14,
+    "damaged_return_records": 1,
+    "reservation_constraint": true,
+    "active_loan_constraint": true,
+    "audit_trigger": true
+  },
+  "source_session_rows": 2,
+  "restored_session_rows": 0,
+  "duplicate_target_rejected": true,
+  "runtime_grants_verified": true,
+  "restart_preserved_source": true
+}
