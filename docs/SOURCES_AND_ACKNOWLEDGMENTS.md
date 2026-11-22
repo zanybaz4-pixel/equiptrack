@@ -1,5 +1,9 @@
 # Sources, assumptions and assistance
 
+## Interface assets updated November 21 2026
+
+The user supplied the Bicol University seal for the interface redesign. The local PNG has a transparent background prepared with OpenAI image editing. The sign-in page and dashboard use a Bicol University campus-building photograph from [I Love Music](https://madroniolovelee.blogspot.com/), downloaded from [the campus image](https://3.bp.blogspot.com/-1XwqP5yhnWk/UIi1hCGaWHI/AAAAAAAAAC0/nMjwXj64v64/s1600/DSC09429.jpg). The image is stored locally and displayed with CSS cropping and color overlays. The photograph is credited here in the project documentation. These visual assets retain their owners' rights.
+
 Reviewed 2026-11-13. The supplied [MIS 215 Term Project Brief](MIS215_TermProject_Brief.pdf) is the **primary academic reference**, including its §6 FOSS/framework policy. All 22 pages were read; BRIEF_ALIGNMENT.md maps requirements and gaps. No school interview, site visit, instructor approval or real Bicol school policy was supplied. External process and technical sources below support only their specific claims; they do not override the brief.
 
 Phase 6 also used the [DepEd Zambales Library Hub borrowing and return procedure](https://zambales.deped.gov.ph/citizens-charter/borrowing-and-returning-lr-from-lh.html) as a documented analogue for due dates and return inspection. The benchmarking scripts use [Grafana k6's documented metrics](https://grafana.com/docs/k6/latest/using-k6/metrics/reference/) and the pinned [k6 OSS release](https://github.com/grafana/k6/releases/tag/v1.8.2). Codex assisted with the experiment, result interpretation and drafting the PDF review copies.
@@ -24,7 +28,7 @@ The application is a proposed academic design informed by these practices. Pendi
 - [NPC Data Privacy Act](https://privacy.gov.ph/DATA-PRIVACY-ACT/) and [school guidance](https://privacy.gov.ph/npc-phe-bulletin-no-17-update-on-the-data-privacy-best-practices-in-online-learning/): principles for the review draft, not a legal compliance determination.
 - Version/license metadata was queried from `https://pypi.org/pypi/PACKAGE/json` and `https://registry.npmjs.org/PACKAGE/latest`, then selected versions were installed and recorded. Specific versions and links appear in STACK_LICENSES.md, requirements files, package lock and dependency-inventory.json.
 
-Primary sources support the associated design choices within their stated scope. No passages or code from a school system were copied. The synthetic school/asset descriptions and original project code were generated for this academic scaffold. Lucide supplies open-source vector interface icons; no stock photos or AI-generated raster assets are included.
+Primary sources support the associated design choices within their stated scope. No passages or code from a school system were copied. The synthetic school/asset descriptions and original project code were generated for this academic scaffold. Lucide supplies open-source vector interface icons. The November 21 redesign includes the image assets credited above and locally hosted DM Sans fonts from [Google Fonts](https://github.com/google/fonts/tree/main/ofl/dmsans), distributed under the SIL Open Font License; the license is included in `frontend/public/fonts/OFL.txt`.
 
 ## AI-assisted contribution disclosure draft
 

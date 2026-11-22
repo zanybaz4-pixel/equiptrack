@@ -20,6 +20,7 @@ The demonstration organization, **Bicol Learning Academy**, is fictional. No org
 - [Phase 2 API contract and setup](docs/PHASE2.md)
 - [Current OpenAPI specification](docs/openapi.json)
 - [Installation, HTTPS, LAN, backup and restore](docs/INSTALLATION.md)
+- [Optional Render internet preview](docs/RENDER.md)
 - [Testing and performance evaluation](docs/TESTING.md)
 - [Phase 3 walkthrough and browser verification](docs/PHASE3.md)
 - [Phase 4 integration results and reproduction](docs/PHASE4.md)

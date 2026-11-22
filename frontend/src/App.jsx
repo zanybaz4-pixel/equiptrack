@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   ArrowDownToLine,
   ArrowUpFromLine,
-  Box,
+  ChevronRight,
   ClipboardCheck,
   ClipboardList,
   Clock3,
@@ -52,19 +52,35 @@ function navMatches(path, route) {
   return path === route || (route !== "/" && path.startsWith(`${route}/`));
 }
 
-function Navigation({ items, path, close }) {
+function Navigation({ items, path, close, grouped = false }) {
   return (
     <nav className="work-nav" aria-label="Workspace">
-      {items.map(([route, title, Icon]) => (
-        <a
-          key={route}
-          href={`#${route}`}
-          onClick={close}
-          aria-current={navMatches(path, route) ? "page" : undefined}
-        >
-          <Icon size={18} aria-hidden="true" />
-          {title}
-        </a>
+      {items.map(([route, title, Icon], index) => (
+        <div key={route}>
+          {grouped &&
+            (index === 0 ||
+              route === "/admin/inventory" ||
+              route === "/profile") && (
+              <p className="work-nav-group">
+                {index === 0
+                  ? "Workspace"
+                  : route === "/profile"
+                    ? "Account"
+                    : "Management"}
+              </p>
+            )}
+          <a
+            href={`#${route}`}
+            onClick={close}
+            aria-current={navMatches(path, route) ? "page" : undefined}
+          >
+            <Icon size={18} aria-hidden="true" />
+            <span>{title}</span>
+            {navMatches(path, route) && (
+              <span className="work-nav-indicator" aria-hidden="true" />
+            )}
+          </a>
+        </div>
       ))}
     </nav>
   );
@@ -203,19 +219,31 @@ export default function App({
       </a>
       <aside className="work-sidebar">
         <a className="work-brand" href="#/">
-          <span>
-            <Box size={23} aria-hidden="true" />
+          <img
+            src="/images/bu-seal.png"
+            alt="Bicol University seal"
+            width="46"
+            height="46"
+          />
+          <span className="work-brand-name">
+            Equip<span>Track</span>
+            <small>Bicol University</small>
           </span>
-          EquipTrack
         </a>
-        <p className="work-school">Bicol Learning Academy</p>
-        <Navigation items={items} path={path} />
+        <Navigation items={items} path={path} grouped />
         <div className="work-sidebar-footer">
           <button type="button" onClick={() => setPrivacyOpen(true)}>
             <ShieldCheck size={17} />
             Privacy and data use
           </button>
-          <small>MIS 215 · Synthetic demonstration</small>
+          <div className="work-sidebar-project">
+            <span className="work-project-mark">
+              <Package size={17} aria-hidden="true" />
+            </span>
+            <span>
+              Equipment workspace<small>MIS 215 · Academic project</small>
+            </span>
+          </div>
         </div>
       </aside>
       <div className="work-frame">
@@ -230,10 +258,20 @@ export default function App({
               <Menu size={22} />
             </button>
             <span className="work-topbar-context">
-              {section || `${role} workspace`}
+              <span>Workspace</span>
+              <ChevronRight size={13} aria-hidden="true" />
+              <strong>{section || `${role} workspace`}</strong>
             </span>
           </div>
           <div className="work-topbar-account">
+            <time className="work-today" dateTime={new Date().toISOString()}>
+              {new Intl.DateTimeFormat("en-PH", {
+                timeZone: "Asia/Manila",
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }).format(new Date())}
+            </time>
             <a
               href="#/profile"
               className="work-account"

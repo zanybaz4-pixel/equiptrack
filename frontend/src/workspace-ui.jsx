@@ -287,7 +287,7 @@ export function FormActions({ busy, submit, close, danger = false }) {
           onClick={close}
           disabled={busy}
         >
-          Back
+          Cancel
         </button>
       )}
       <button

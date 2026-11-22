@@ -12,6 +12,8 @@ The laptop tests used an explicit CA bundle in curl. The user reported opening E
 
 ## Resume on this laptop
 
+For local browser access, double-click `Start-EquipTrack-Local.cmd` in the project folder. Wait for the ready message, open `https://localhost:8443`, and keep the launcher window open while using EquipTrack. This starts the existing containers and keeps the WSL session alive without the old four-hour preview limit. It preserves the database. After restarting Windows, open the launcher again. `Start-EquipTrack-Demo.cmd` is the separate same-network demonstration launcher.
+
 From Windows PowerShell, open the installed Ubuntu distribution and keep its shell open while using the app.
 
 ```powershell

@@ -4,7 +4,11 @@ import {
   ArrowRight,
   ClipboardList,
   Clock3,
+  Layers,
+  Package,
   PackageCheck,
+  Plus,
+  Users,
   TriangleAlert,
 } from "lucide-react";
 import {
@@ -33,10 +37,33 @@ const metricItems = [
     title: "Pending review",
     Icon: ClipboardList,
     tone: "amber",
+    adminPath: "/admin/review",
+    description: "Awaiting a decision",
   },
-  { status: "approved", title: "Approved", Icon: PackageCheck, tone: "green" },
-  { status: "released", title: "On loan", Icon: Clock3, tone: "blue" },
-  { status: "overdue", title: "Overdue", Icon: TriangleAlert, tone: "red" },
+  {
+    status: "approved",
+    title: "Approved",
+    Icon: PackageCheck,
+    tone: "green",
+    adminPath: "/admin/release",
+    description: "Ready for equipment pickup",
+  },
+  {
+    status: "released",
+    title: "On loan",
+    Icon: Clock3,
+    tone: "blue",
+    adminPath: "/admin/active",
+    description: "Currently checked out",
+  },
+  {
+    status: "overdue",
+    title: "Overdue",
+    Icon: TriangleAlert,
+    tone: "red",
+    adminPath: "/admin/overdue",
+    description: "Past the scheduled return",
+  },
 ];
 
 export function RequestTable({ items, admin }) {
@@ -58,10 +85,17 @@ export function RequestTable({ items, admin }) {
           {items.map((row) => (
             <tr key={row.id}>
               <th scope="row">
-                <a href={`#/requests/${row.id}`}>{row.equipment_name}</a>
-                <span>
-                  #{row.id} · {row.asset_code}
-                </span>
+                <a className="request-equipment" href={`#/requests/${row.id}`}>
+                  <span className="request-equipment-icon">
+                    <Package size={20} strokeWidth={1.6} aria-hidden="true" />
+                  </span>
+                  <span className="request-equipment-name">
+                    {row.equipment_name}
+                    <small>
+                      #{row.id} · {row.asset_code}
+                    </small>
+                  </span>
+                </a>
               </th>
               {admin && (
                 <td data-label="Borrower">
@@ -76,11 +110,11 @@ export function RequestTable({ items, admin }) {
               </td>
               <td>
                 <a
-                  className="text-button"
+                  className="request-open-button"
                   href={`#/requests/${row.id}`}
                   aria-label={`Open request ${row.id} for ${row.equipment_name}`}
                 >
-                  Open <ArrowRight size={14} />
+                  View <ArrowRight size={14} aria-hidden="true" />
                 </a>
               </td>
             </tr>
@@ -95,68 +129,213 @@ export function Dashboard({ session }) {
   const admin = session.user.role === "admin";
   const overview = useResource("/dashboard");
   const recent = useResource("/requests?limit=5");
+  const active = useResource("/requests?custody=active&limit=3");
+  const shortcuts = admin
+    ? [
+        {
+          title: "Equipment inventory",
+          description: "Assets, categories and availability",
+          path: "/admin/inventory",
+          Icon: Layers,
+        },
+        {
+          title: "Record a return",
+          description: "Close a loan and check condition",
+          path: "/admin/returns",
+          Icon: PackageCheck,
+        },
+        {
+          title: "Manage users",
+          description: "Accounts and workspace access",
+          path: "/admin/accounts",
+          Icon: Users,
+        },
+      ]
+    : [
+        {
+          title: "Browse equipment",
+          description: "Find resources for your next class",
+          path: "/equipment",
+          Icon: Layers,
+        },
+        {
+          title: "My requests",
+          description: "Check approvals and pickup details",
+          path: "/requests",
+          Icon: ClipboardList,
+        },
+        {
+          title: "Borrowing history",
+          description: "View your past loans and returns",
+          path: "/history",
+          Icon: Clock3,
+        },
+      ];
   return (
     <>
-      <PageTitle
-        title={admin ? "Custodian dashboard" : "Borrower dashboard"}
-        description={
-          admin
-            ? "Review requests and track equipment in circulation."
-            : "Track your requests, pickups and returns."
-        }
-      >
-        <a
-          className="primary-button"
-          href={admin ? "#/admin/review" : "#/equipment"}
-        >
-          {admin ? "Review requests" : "Browse equipment"}{" "}
-          <ArrowRight size={16} />
-        </a>
-      </PageTitle>
+      <section className="dashboard-intro" aria-labelledby="dashboard-title">
+        <div className="dashboard-intro-copy">
+          <p className="dashboard-eyebrow">
+            {admin ? "Custodian workspace" : "Borrower workspace"}
+          </p>
+          <h1 id="dashboard-title" tabIndex={-1}>
+            {admin ? "Equipment overview" : "Your borrowing overview"}
+          </h1>
+          <p>
+            {admin
+              ? "A clear view of requests, campus equipment and every handover."
+              : "Your requests, upcoming pickups and equipment returns, together."}
+          </p>
+          <div className="dashboard-intro-actions">
+            <a
+              className="primary-button"
+              href={admin ? "#/admin/review" : "#/equipment"}
+            >
+              {admin ? (
+                <ClipboardList size={17} aria-hidden="true" />
+              ) : (
+                <Plus size={17} aria-hidden="true" />
+              )}
+              {admin ? "Review requests" : "Borrow equipment"}
+            </a>
+            <a
+              className="secondary-button"
+              href={admin ? "#/admin/inventory" : "#/history"}
+            >
+              {admin ? "View inventory" : "View borrowing history"}{" "}
+              <ArrowRight size={15} aria-hidden="true" />
+            </a>
+          </div>
+        </div>
+        <div className="dashboard-campus-card">
+          <img src="/images/bu-seal.png" alt="" width="49" height="49" />
+          <div>
+            <strong>Bicol University</strong>
+            <span>Equipment borrowing workspace</span>
+          </div>
+        </div>
+      </section>
       <State resource={overview}>
         {(data) => (
           <div className="work-metric-grid">
-            {metricItems.map(({ status, title, Icon, tone }) => (
-              <article className="work-metric work-panel" key={status}>
-                <span className={`work-metric-icon ${tone}`}>
-                  <Icon size={21} />
-                </span>
-                <p>{title}</p>
-                <strong>
-                  {status === "overdue"
-                    ? data.overdue
-                    : (data.requests_by_status[status] ?? 0)}
-                </strong>
-              </article>
-            ))}
+            {metricItems.map(
+              ({ status, title, Icon, tone, adminPath, description }) => (
+                <a
+                  className={`work-metric work-panel metric-${tone}`}
+                  key={status}
+                  href={`#${admin ? adminPath : "/requests"}`}
+                >
+                  <div className="work-metric-top">
+                    <p>{title}</p>
+                    <span className={`work-metric-icon ${tone}`}>
+                      <Icon size={21} />
+                    </span>
+                  </div>
+                  <strong>
+                    {status === "overdue"
+                      ? data.overdue
+                      : (data.requests_by_status[status] ?? 0)}
+                  </strong>
+                  <div className="work-metric-bottom">
+                    <span>{description}</span>
+                    <ArrowRight size={15} aria-hidden="true" />
+                  </div>
+                </a>
+              ),
+            )}
           </div>
         )}
       </State>
-      <section
-        className="work-panel work-section"
-        aria-labelledby="recent-title"
-      >
-        <header className="work-section-header">
-          <div>
-            <h2 id="recent-title">Recent requests</h2>
-            <p>Dates are shown in Philippine time.</p>
-          </div>
-          <a
-            className="text-button"
-            href={admin ? "#/admin/history" : "#/requests"}
-          >
-            View all <ArrowRight size={16} />
-          </a>
-        </header>
-        <State
-          resource={recent}
-          empty={
-            recent.data?.length === 0 && "No requests have been submitted yet."
-          }
+      <div className="dashboard-content-grid">
+        <section
+          className="work-panel work-section"
+          aria-labelledby="recent-title"
         >
-          {(items) => <RequestTable items={items} admin={admin} />}
-        </State>
-      </section>
+          <header className="work-section-header">
+            <div>
+              <h2 id="recent-title">Recent requests</h2>
+              <p>Latest borrowing activity · Philippine time</p>
+            </div>
+            <a
+              className="text-button"
+              href={admin ? "#/admin/history" : "#/requests"}
+            >
+              View all <ArrowRight size={16} />
+            </a>
+          </header>
+          <State
+            resource={recent}
+            empty={
+              recent.data?.length === 0 &&
+              "No requests have been submitted yet."
+            }
+          >
+            {(items) => <RequestTable items={items} admin={admin} />}
+          </State>
+        </section>
+        <aside className="dashboard-side">
+          <section
+            className="work-panel dashboard-shortcuts"
+            aria-labelledby="shortcuts-title"
+          >
+            <div className="dashboard-panel-title">
+              <h2 id="shortcuts-title">Quick actions</h2>
+            </div>
+            {shortcuts.map(({ title, description, path, Icon }) => (
+              <a key={path} href={`#${path}`} className="dashboard-shortcut">
+                <span className="dashboard-shortcut-icon">
+                  <Icon size={19} strokeWidth={1.7} aria-hidden="true" />
+                </span>
+                <span>
+                  <strong>{title}</strong>
+                  <small>{description}</small>
+                </span>
+                <ArrowRight size={15} aria-hidden="true" />
+              </a>
+            ))}
+          </section>
+          <section
+            className="work-panel dashboard-loans"
+            aria-labelledby="loans-title"
+          >
+            <div className="dashboard-panel-title">
+              <h2 id="loans-title">On loan</h2>
+              <a
+                href={admin ? "#/admin/active" : "#/requests"}
+                className="text-button"
+              >
+                View all <ArrowRight size={13} />
+              </a>
+            </div>
+            <State
+              resource={active}
+              empty={
+                active.data?.length === 0 &&
+                "No equipment is currently on loan."
+              }
+            >
+              {(loans) =>
+                loans.map((loan) => (
+                  <a
+                    href={`#/requests/${loan.id}`}
+                    key={loan.id}
+                    className="dashboard-loan"
+                  >
+                    <span className="dashboard-loan-icon">
+                      <Package size={20} aria-hidden="true" />
+                    </span>
+                    <span>
+                      <strong>{loan.equipment_name}</strong>
+                      <small>Due {displayDate(loan.due_at)}</small>
+                    </span>
+                    <ArrowRight size={14} aria-hidden="true" />
+                  </a>
+                ))
+              }
+            </State>
+          </section>
+        </aside>
+      </div>
     </>
   );
 }

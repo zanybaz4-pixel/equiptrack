@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import App from "./App.jsx";
 import { api } from "./api.js";
+import { Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 
 export default function SessionGate() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   useEffect(() => {
     function expire() {
@@ -94,54 +96,89 @@ export default function SessionGate() {
     );
   }
   return (
-    <main className="grid min-h-screen place-items-center p-5">
-      <section className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-        <p className="eyebrow">EQUIPTRACK</p>
-        <h1>Sign in</h1>
-        <p
-          id="login-privacy"
-          className="mt-3 text-sm leading-relaxed text-slate-600"
-        >
-          Use your synthetic demonstration account. EquipTrack uses your email
-          and password to verify access to your lending workspace.
-        </p>
-        <form
-          onSubmit={signIn}
-          aria-describedby="login-privacy"
-          className="mt-6 flex flex-col gap-4"
-        >
-          <label className="flex flex-col gap-2">
-            Email
-            <input
-              name="email"
-              type="email"
-              autoComplete="username"
-              required
-              maxLength={254}
-              className="rounded-lg border border-slate-300 p-3"
+    <main className="login-page">
+      <div className="login-campus" aria-hidden="true" />
+      <div className="login-layout">
+        <section className="login-card" aria-labelledby="sign-in-title">
+          <div className="login-seal-wrap">
+            <img
+              className="login-seal"
+              src="/images/bu-seal.png"
+              width="104"
+              height="104"
+              alt="Bicol University seal"
             />
-          </label>
-          <label className="flex flex-col gap-2">
-            Password
-            <input
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              maxLength={128}
-              className="rounded-lg border border-slate-300 p-3"
-            />
-          </label>
-          {error && (
-            <p role="alert" className="error-text">
-              {error}
-            </p>
-          )}
-          <button className="primary-button" disabled={busy}>
-            {busy ? "Signing in…" : "Sign in"}
-          </button>
-        </form>
-      </section>
+          </div>
+          <p className="login-university">Bicol University</p>
+          <h1 id="sign-in-title">Sign in to EquipTrack</h1>
+          <p className="login-description">
+            Your campus resources, in one shared workspace.
+          </p>
+          <form
+            onSubmit={signIn}
+            aria-describedby="login-privacy"
+            className="login-form"
+          >
+            <label className="login-field">
+              Email address
+              <span className="login-input-wrap">
+                <Mail size={18} aria-hidden="true" />
+                <input
+                  id="login-email"
+                  name="email"
+                  type="email"
+                  autoComplete="username"
+                  required
+                  maxLength={254}
+                  placeholder="Enter your email address"
+                />
+              </span>
+            </label>
+            <div className="login-field">
+              <label htmlFor="login-password">Password</label>
+              <div className="login-input-wrap">
+                <LockKeyhole size={18} aria-hidden="true" />
+                <input
+                  id="login-password"
+                  name="password"
+                  type={passwordVisible ? "text" : "password"}
+                  autoComplete="current-password"
+                  required
+                  maxLength={128}
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  className="login-password-toggle"
+                  aria-label={
+                    passwordVisible ? "Hide password" : "Show password"
+                  }
+                  aria-pressed={passwordVisible}
+                  onClick={() => setPasswordVisible((visible) => !visible)}
+                >
+                  {passwordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+            {error && (
+              <p role="alert" className="login-error">
+                {error}
+              </p>
+            )}
+            <button className="login-submit" disabled={busy}>
+              {busy ? "Signing in…" : "Sign in"}
+            </button>
+          </form>
+          <p id="login-privacy" className="login-privacy">
+            Use your demonstration account to manage equipment borrowing,
+            pickups and returns.
+          </p>
+          <p className="login-demo-note">
+            <ShieldCheck size={15} aria-hidden="true" />
+            Academic project · Synthetic data only
+          </p>
+        </section>
+      </div>
     </main>
   );
 }

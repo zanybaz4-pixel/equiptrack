@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: equiptrack
+    branch: codex/render-deployment
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile.render
+    dockerContext: .
+    healthCheckPath: /api/health/ready
+    autoDeployTrigger: "off"
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: MIGRATION_DATABASE_URL
+        fromDatabase:
+          name: equiptrack-db
+          property: connectionString
+      - key: RENDER_RUNTIME_PASSWORD
+        generateValue: true
+      - key: DEMO_CUSTODIAN_PASSWORD
+        generateValue: true
+      - key: DEMO_STUDENT_PASSWORD
+        generateValue: true
+      - key: DEMO_FACULTY_PASSWORD
+        generateValue: true
+
+databases:
+  - name: equiptrack-db
+    plan: free
+    region: singapore
+    postgresMajorVersion: "17"
+    databaseName: equiptrack
+    user: equiptrack_owner
+    ipAllowList: []

@@ -1,0 +1,26 @@
+FROM node:24-alpine AS web
+WORKDIR /web
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+COPY frontend/ ./
+RUN npm run build
+
+FROM python:3.13-slim
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PORT=10000
+RUN apt-get update && apt-get install -y --no-install-recommends nginx tini \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --create-home appuser \
+    && mkdir -p /tmp/nginx/client /tmp/nginx/proxy /tmp/nginx/fastcgi /tmp/nginx/uwsgi /tmp/nginx/scgi \
+    && chown -R appuser:appuser /tmp/nginx
+WORKDIR /app/backend
+COPY backend/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+COPY backend/app ./app
+COPY backend/migrations ./migrations
+COPY backend/alembic.ini ./
+COPY infra/render /app/infra/render
+COPY --from=web /web/dist /app/frontend
+USER appuser
+EXPOSE 10000
+ENTRYPOINT ["/usr/bin/tini", "--"]
+CMD ["python", "-m", "app.render_runtime"]
