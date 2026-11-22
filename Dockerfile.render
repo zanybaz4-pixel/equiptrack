@@ -9,9 +9,7 @@ FROM python:3.13-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PORT=10000
 RUN apt-get update && apt-get install -y --no-install-recommends nginx tini \
     && rm -rf /var/lib/apt/lists/* \
-    && useradd --create-home appuser \
-    && mkdir -p /tmp/nginx/client /tmp/nginx/proxy /tmp/nginx/fastcgi /tmp/nginx/uwsgi /tmp/nginx/scgi \
-    && chown -R appuser:appuser /tmp/nginx
+    && useradd --create-home appuser
 WORKDIR /app/backend
 COPY backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt

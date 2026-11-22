@@ -97,6 +97,9 @@ def main():
     port = environ.get("PORT", "10000")
     if not port.isdecimal() or not 1024 <= int(port) <= 65535:
         raise ValueError("PORT must be an unprivileged TCP port.")
+    # Providers can mount a fresh /tmp, hiding directories made during the build.
+    for directory in ("client", "proxy", "fastcgi", "uwsgi", "scgi"):
+        Path("/tmp/nginx", directory).mkdir(parents=True, exist_ok=True)
     prepare_database(environ, owner_url)
     template = Path("/app/infra/render/nginx.conf.template").read_text(encoding="utf-8")
     config = Path("/tmp/equiptrack-nginx.conf")
