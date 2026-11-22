@@ -1,6 +1,18 @@
 # Optional Render preview
 
-Prepared November 22, 2026, Asia/Manila. This is an additional internet-accessible demo requested by the user. The course demonstration remains the existing WSL2 Docker Engine/Compose deployment. This preview bundles Nginx and FastAPI in one free web-service container, with PostgreSQL in a separate managed service; it does not establish the brief's independently deployed three-tier acceptance evidence or approval of Render under the FOSS tool policy.
+Deployed November 22, 2026, Asia/Manila. This is an additional internet-accessible demo requested by the user. The course demonstration remains the existing WSL2 Docker Engine/Compose deployment. This preview bundles Nginx and FastAPI in one free web-service container, with PostgreSQL in a separate managed service; it does not establish the brief's independently deployed three-tier acceptance evidence or approval of Render under the FOSS tool policy.
+
+## Live deployment
+
+- URL: https://equiptrack-5r6t.onrender.com/
+- Workspace: EquipTrack; free web service and free PostgreSQL, Singapore.
+- Deployed application commit: `d6443048bcbde14a6d0cb563dc8a7d94e701da7e`, branch `codex/render-deployment`.
+- Database expiry shown by Render: **December 22, 2026**.
+- Eight public HTTPS checks passed: frontend and its script/logo/photo, database readiness, signed-out API rejection, and rejection of a login from an incorrect origin.
+- Live browser custodian sign-in, dashboard, eight inventory items and authenticated page reload were verified. No borrowing/review/return transaction was submitted to the live cloud database during these checks. A separate-device internet test and complete live transaction cycle remain user acceptance checks.
+- The first deployment failed because Render replaces `/tmp`; startup now creates Nginx temporary directories. The corrected image passed all 18 isolated HTTP checks with an empty runtime `/tmp` before the successful deployment. The isolated checks also passed after a restart; cloud restart persistence was not separately tested.
+
+The laptop's existing data is preserved. The cloud demo starts with its own synthetic catalog and accounts. Passwords remain in Render's private Environment settings.
 
 ## Deployment
 
@@ -22,7 +34,7 @@ Render's free web service can sleep after 15 minutes without incoming requests. 
 
 Before first cloud deployment, the image built successfully and ran against a separate PostgreSQL 17 test database with a non-superuser migration owner and a 512 MB application limit. Nine deployment-configuration tests and 18 HTTP checks passed, including all three roles, eight catalog items, Secure/HttpOnly/SameSite cookie attributes, signed-out access rejection and CSRF rejection. These HTTP container checks are not browser HTTPS or Render deployment proof. A broader Windows test run was interrupted without a result; no full regression pass is claimed for this increment.
 
-After deploying, verify public HTTPS, the ready endpoint, successful sign-in, a borrower request, custodian review, and persistence after restart. Record the actual URL, deployed commit, verification results and database expiry before marking the cloud demo complete.
+Before relying on this preview for a live assessment, complete the remaining acceptance checks above, including a borrower request, custodian review, return, and cloud persistence after restart. Deployment availability and authentication have been verified; the entire live business workflow is not claimed as tested.
 
 ## References
 
