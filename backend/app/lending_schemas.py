@@ -59,6 +59,15 @@ class LoginIn(Input):
     password: Annotated[str, StringConstraints(min_length=1, max_length=128)] = Field(repr=False)
 
 
+class PasswordResetRequestIn(Input):
+    email: Email
+
+
+class PasswordResetIn(Input):
+    token: Annotated[str, StringConstraints(min_length=43, max_length=43, pattern=r"^[A-Za-z0-9_-]{43}$")] = Field(repr=False)
+    password: Annotated[str, StringConstraints(min_length=12, max_length=128)] = Field(repr=False)
+
+
 class UserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int

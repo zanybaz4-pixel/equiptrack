@@ -10,7 +10,7 @@ from sqlalchemy.exc import OperationalError, SQLAlchemyError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.catalog import catalog_query, list_equipment
-from app import administration, auth, lending
+from app import administration, auth, lending, recovery
 from app.db import DB
 from app.lending_schemas import BookingTimestamp
 from app.models import Category, EquipmentItem
@@ -25,6 +25,7 @@ app = FastAPI(
     docs_url="/api/docs", openapi_url="/api/openapi.json", redoc_url=None,
 )
 app.include_router(auth.router)
+app.include_router(recovery.router)
 app.include_router(lending.router)
 app.include_router(administration.router)
 
@@ -89,7 +90,7 @@ def live():
 
 @app.get("/api/health/ready", tags=["operations"], responses=errors(500, 503))
 def ready(db: DB):
-    db.execute(text("SELECT 1 FROM equipment_items, auth_sessions LIMIT 0"))
+    db.execute(text("SELECT 1 FROM equipment_items, auth_sessions, password_reset_tokens, password_reset_limits LIMIT 0"))
     return {"status": "ready", "database": "postgresql"}
 
 

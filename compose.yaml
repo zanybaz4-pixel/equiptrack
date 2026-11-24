@@ -46,6 +46,8 @@ services:
       DATABASE_URL: ${DATABASE_URL:?Set runtime connection URL}
       APP_ORIGIN: ${APP_ORIGIN:-https://localhost:8443}
       APP_ENV: ${APP_ENV:-development}
+      BREVO_API_KEY: ${BREVO_API_KEY:-}
+      MAIL_FROM_EMAIL: ${MAIL_FROM_EMAIL:-}
     depends_on:
       migrate: { condition: service_completed_successfully }
     expose: ["8000"]

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import App from "./App.jsx";
 import { api } from "./api.js";
+import PasswordRecovery from "./PasswordRecovery.jsx";
 import { Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 
 export default function SessionGate() {
@@ -9,6 +10,14 @@ export default function SessionGate() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [authLocation, setAuthLocation] = useState(() => window.location.hash);
+  const authPath = authLocation.split("?")[0];
+
+  useEffect(() => {
+    function changed() { setAuthLocation(window.location.hash); }
+    window.addEventListener("hashchange", changed);
+    return () => window.removeEventListener("hashchange", changed);
+  }, []);
 
   useEffect(() => {
     function expire() {
@@ -76,6 +85,9 @@ export default function SessionGate() {
     }
   }
 
+  if (authPath === "#/forgot-password" || authPath === "#/reset-password") {
+    return <PasswordRecovery key={authLocation} mode={authPath === "#/reset-password" ? "reset" : "request"} completed={() => setSession(null)} />;
+  }
   if (loading)
     return (
       <main className="grid min-h-screen place-items-center" role="status">
@@ -160,6 +172,7 @@ export default function SessionGate() {
                 </button>
               </div>
             </div>
+            <a className="login-forgot" href="#/forgot-password">Forgot password?</a>
             {error && (
               <p role="alert" className="login-error">
                 {error}

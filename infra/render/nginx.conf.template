@@ -14,6 +14,7 @@ http {
     uwsgi_temp_path /tmp/nginx/uwsgi;
     scgi_temp_path /tmp/nginx/scgi;
     limit_req_zone $binary_remote_addr zone=equiptrack_login:1m rate=10r/m;
+    limit_req_zone $binary_remote_addr zone=equiptrack_recovery:1m rate=5r/m;
     server {
         listen ${PORT};
         root /app/frontend;
@@ -39,7 +40,13 @@ http {
             add_header Cache-Control no-store always;
             add_header X-Request-ID $request_id always;
             add_header Retry-After 6 always;
-            return 429 '{"error":{"code":"rate_limited","message":"Too many login attempts. Retry shortly.","request_id":"$request_id"}}';
+            return 429 '{"error":{"code":"rate_limited","message":"Too many attempts. Retry shortly.","request_id":"$request_id"}}';
+        }
+        location ~ ^/api/auth/(forgot-password|reset-password)$ {
+            limit_req zone=equiptrack_recovery burst=5 nodelay;
+            limit_req_status 429;
+            error_page 429 = @login_limit;
+            proxy_pass http://127.0.0.1:8000;
         }
         location /api/ { proxy_pass http://127.0.0.1:8000; }
         location /assets/ { try_files $uri =404; expires 7d; }

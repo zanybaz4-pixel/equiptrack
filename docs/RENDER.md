@@ -16,6 +16,8 @@ The laptop's existing data is preserved. The cloud demo starts with its own synt
 
 ## Account email addresses
 
+Password recovery setup and verification are documented in [PASSWORD_RECOVERY.md](PASSWORD_RECOVERY.md). Email delivery needs a verified sender and private Brevo configuration before reset emails can be sent.
+
 At the user's request on November 24, 2026, account creation accepts Gmail and other valid email addresses. The previous `@example.invalid` restriction was in the account form; the API already validates and normalizes general email addresses. Existing demo accounts remain unchanged. The email identifies an EquipTrack account: this does not implement Google sign-in, email verification, or email delivery. Choose a separate EquipTrack password of at least 12 characters.
 
 This user-requested extension permits personal sign-in emails in the cloud preview. The brief's synthetic-data requirement still applies to academic test records and submitted evidence; use the seeded fictional accounts for that demonstration.

@@ -42,7 +42,7 @@ def engines():
     try:
         with owner_engine.connect() as db:
             # Fail early if this is the wrong schema instead of trying to mutate it.
-            assert db.scalar(text("SELECT version_num FROM alembic_version")) == "0002_sessions"
+            assert db.scalar(text("SELECT version_num FROM alembic_version")) == "0003_password_reset"
         yield owner_engine, runtime_engine
     finally:
         runtime_engine.dispose()
@@ -139,6 +139,112 @@ def create_request(actor, item, start, end, **fields):
     body = {"equipment_id": item["id"], "borrow_at": start.isoformat(), "due_at": end.isoformat(),
             "purpose": "Synthetic integration request"}
     return actor.write("POST", "/api/requests", {**body, **fields})
+
+
+def recovery_capture(monkeypatch):
+    from app import recovery
+    messages = []
+    monkeypatch.setattr(recovery, "mail_ready", lambda: True)
+    monkeypatch.setattr(recovery, "send_password_reset", lambda email, token: messages.append((email, token)))
+    return messages
+
+
+def request_recovery(actor, email=None):
+    return actor.client.post("/api/auth/forgot-password", headers={"Origin": ORIGIN},
+                             json={"email": email or actor.credentials["email"]})
+
+
+def test_recovery_requests_are_neutral_and_tokens_are_hashed(workflow, monkeypatch):
+    from app.security import token_hash
+    owner, _, actors = workflow
+    borrower = actors["borrower"]
+    messages = recovery_capture(monkeypatch)
+    known = request_recovery(borrower, borrower.credentials["email"].upper())
+    unknown = request_recovery(borrower, "missing-recovery@example.invalid")
+    assert known.status_code == unknown.status_code == 202
+    assert known.json() == unknown.json()
+    assert len(messages) == 1
+    email, token = messages[0]
+    assert email == borrower.credentials["email"] and len(token) == 43
+    assert token not in known.text
+    with owner.connect() as db:
+        stored = db.scalar(text("SELECT token_hash FROM password_reset_tokens WHERE user_id=:id"), {"id": borrower.id})
+        assert stored == token_hash(token) and stored != token
+    assert request_recovery(borrower).status_code == 202
+    assert len(messages) == 1
+
+
+def test_recovery_changes_password_once_and_revokes_only_its_sessions(workflow, monkeypatch):
+    from app.security import verify_password
+    owner, _, actors = workflow
+    borrower, other = actors["borrower"], actors["other"]
+    borrower.login()
+    other.login()
+    messages = recovery_capture(monkeypatch)
+    assert request_recovery(borrower).status_code == 202
+    token = messages[0][1]
+    body = {"token": token, "password": "Recovery-test-password-42"}
+    response = borrower.client.post("/api/auth/reset-password", json=body, headers={"Origin": ORIGIN})
+    assert response.status_code == 200, response.text
+    assert borrower.client.get("/api/auth/me").status_code == 401
+    assert other.client.get("/api/auth/me").status_code == 200
+    assert borrower.client.post("/api/auth/login", json=borrower.credentials, headers={"Origin": ORIGIN}).status_code == 401
+    assert borrower.client.post("/api/auth/login", json={**borrower.credentials, "password": body["password"]},
+                                headers={"Origin": ORIGIN}).status_code == 200
+    assert borrower.client.post("/api/auth/reset-password", json=body, headers={"Origin": ORIGIN}).status_code == 400
+    with owner.connect() as db:
+        assert verify_password(body["password"], db.scalar(text("SELECT password_hash FROM users WHERE id=:id"), {"id": borrower.id}))
+        assert db.scalar(text("SELECT count(*) FROM password_reset_tokens WHERE user_id=:id"), {"id": borrower.id}) == 0
+        details = db.scalar(text("SELECT details FROM audit_logs WHERE actor_id=:id AND action='auth.password_reset'"), {"id": borrower.id})
+        assert details == {}
+
+
+@pytest.mark.parametrize("inactive", [False, True])
+def test_expired_or_deactivated_recovery_link_is_rejected(workflow, monkeypatch, inactive):
+    owner, _, actors = workflow
+    borrower = actors["borrower"]
+    messages = recovery_capture(monkeypatch)
+    request_recovery(borrower)
+    with owner.begin() as db:
+        if inactive:
+            db.execute(text("UPDATE users SET is_active=false WHERE id=:id"), {"id": borrower.id})
+        else:
+            db.execute(text("UPDATE password_reset_tokens SET created_at=now()-interval '2 hours', expires_at=now()-interval '1 hour' WHERE user_id=:id"), {"id": borrower.id})
+    response = borrower.client.post("/api/auth/reset-password", headers={"Origin": ORIGIN},
+                                    json={"token": messages[0][1], "password": "Recovery-test-password-42"})
+    assert response.status_code == 400
+
+
+def test_recovery_delivery_quota_is_shared_and_expires(engines):
+    from app.recovery import delivery_allowed
+    _, runtime = engines
+    email = f"quota-{uuid4().hex}@example.invalid"
+    now = datetime.now(UTC)
+    with Session(runtime) as db:
+        assert delivery_allowed(db, email, now)
+        db.commit()
+    for attempt in range(1, 5):
+        with Session(runtime) as db:
+            assert delivery_allowed(db, email, now + timedelta(seconds=61 * attempt))
+            db.commit()
+    with Session(runtime) as db:
+        assert not delivery_allowed(db, email, now + timedelta(minutes=10))
+        db.commit()
+    with Session(runtime) as db:
+        assert delivery_allowed(db, email, now + timedelta(hours=1, seconds=1))
+        db.commit()
+
+
+def test_concurrent_recovery_link_use_succeeds_only_once(workflow, monkeypatch):
+    _, _, actors = workflow
+    borrower = actors["borrower"]
+    messages = recovery_capture(monkeypatch)
+    request_recovery(borrower)
+    body = {"token": messages[0][1], "password": "Recovery-race-password-42"}
+    def reset():
+        return borrower.client.post("/api/auth/reset-password", json=body, headers={"Origin": ORIGIN}).status_code
+    with ThreadPoolExecutor(max_workers=2) as workers:
+        assert sorted(workers.map(lambda _: reset(), range(2))) == [200, 400]
 
 
 def approve(actor, request_id):

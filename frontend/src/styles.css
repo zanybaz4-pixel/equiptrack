@@ -441,3 +441,32 @@ h2 {
     scroll-behavior: auto !important;
   }
 }
+.login-forgot {
+  justify-self: end;
+  color: #116b84;
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+.recovery-back {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.3rem;
+  color: #23576a;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+.recovery-success {
+  border: 1px solid #9bd5bd;
+  background: #ebf8f1;
+  color: #17553f;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  line-height: 1.6;
+}
+.recovery-submit { text-align: center; text-decoration: none; }
+.recovery-card h1:focus { outline: none; }
