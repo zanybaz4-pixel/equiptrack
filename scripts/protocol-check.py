@@ -94,6 +94,7 @@ class ProtocolChecks:
         categories, _ = e("category list", 200, "GET", "/categories", session=student)
         e("no catalog session", 401, "GET", "/equipment")
         catalog, _ = e("catalog list", 200, "GET", "/equipment", session=student)
+        e("catalog rejects NUL search", 422, "GET", "/equipment?q=tool%00", session=student)
         item = next(row for row in catalog["items"] if row["availability"] == "available")
         equipment_id = item["id"]
         e("catalog detail", 200, "GET", f"/equipment/{equipment_id}", session=student)
@@ -109,6 +110,7 @@ class ProtocolChecks:
 
         category_body = {"name": "Protocol test equipment"}
         category, _ = e("create category", 201, "POST", "/categories", session=admin, body=category_body)
+        e("duplicate category", 409, "POST", "/categories", session=admin, body=category_body)
         e("borrower cannot create category", 403, "POST", "/categories", session=student, body=category_body)
         equipment_body = {"name": "Synthetic test item", "location": "Test room",
                           "category_id": category["id"], "asset_code": "PROTOCOL-001",
@@ -137,6 +139,7 @@ class ProtocolChecks:
                 "purpose": "Synthetic equipment lending protocol check"}
         e("request needs session", 401, "GET", "/requests")
         e("request list", 200, "GET", "/requests", session=student)
+        e("requests reject NUL search", 422, "GET", "/requests?q=tool%00", session=student)
         e("reverse date order", 422, "POST", "/requests", session=student, body={**body, "due_at": start.isoformat()})
         e("request rejects Unix timestamp strings", 422, "POST", "/requests", session=student,
           body={**body, "borrow_at": str(int(start.timestamp())), "due_at": str(int(end.timestamp()))})
@@ -172,6 +175,11 @@ class ProtocolChecks:
         returned, _ = e("damaged return", 200, "PUT", f"{winner_path}/return", session=admin,
                         body={"condition": "damaged", "remarks": "Synthetic damage"})
         assert returned["status"] == "returned" and returned["equipment_state"] == "maintenance"
+        history, _ = e("completed return history", 200, "GET", "/requests?status=returned", session=admin)
+        completed = next(row for row in history if row["id"] == winner["id"])
+        assert completed["loan"]["returned_at"] and completed["loan"]["return_condition"] == "damaged"
+        active, _ = e("returned item leaves custody queue", 200, "GET", "/requests?custody=active", session=admin)
+        assert all(row["id"] != winner["id"] for row in active)
         e("repeat return rejected", 409, "PUT", f"{winner_path}/return", session=admin, body={"condition": "good"})
         maintained, _ = e("returned equipment marked maintenance", 200, "GET", f"/equipment/{equipment_id}", session=student)
         assert maintained["availability"] == "maintenance"

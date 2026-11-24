@@ -6,7 +6,7 @@ from sqlalchemy import literal, or_, select
 from sqlalchemy.orm import Session
 
 from app.db import DB
-from app.lending_schemas import DecisionIn, LoanOut, ReleaseIn, RequestCreate, RequestOut, RequestStatus, ReturnIn
+from app.lending_schemas import DecisionIn, LoanOut, ReleaseIn, RequestCreate, RequestOut, RequestStatus, ReturnIn, SearchText
 from app.models import BorrowingRequest, EquipmentItem, LoanRecord, User
 from app.schemas import errors
 from app.security import AdminWriter, BorrowerWriter, Current
@@ -103,7 +103,7 @@ def save_request(db: Session, actor: User, row: BorrowingRequest, item: Equipmen
 
 @router.get("", response_model=list[RequestOut], responses=errors(401, 422, 500, 503))
 def list_requests(db: DB, principal: Current, status: RequestStatus | None = None,
-                  custody: Literal["active", "overdue"] | None = None, q: str = Query("", max_length=120),
+                  custody: Literal["active", "overdue"] | None = None, q: SearchText = "",
                   offset: int = Query(0, ge=0, le=100000), limit: int = Query(25, ge=1, le=100)):
     now = datetime.now(UTC)
     statement = visible_requests(principal.user)

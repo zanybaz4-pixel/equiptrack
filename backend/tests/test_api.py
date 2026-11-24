@@ -120,6 +120,14 @@ def test_search_input_is_bound_as_data(client, db):
     assert attack in compiled.params.values()
 
 
+@pytest.mark.parametrize("path", ["/api/equipment", "/api/requests"])
+def test_search_rejects_null_characters_before_querying(client, db, path):
+    response = client.get(path, params={"q": "tool\x00"})
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "validation_error"
+    db.execute.assert_not_called()
+
+
 def test_unknown_route_uses_error_envelope(client):
     response = client.get("/api/not-a-route")
     assert response.status_code == 404

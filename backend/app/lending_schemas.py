@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 from typing import Annotated, Literal
 
+from fastapi import Query
 from pydantic import (
     AfterValidator, AwareDatetime, BaseModel, BeforeValidator, ConfigDict, Field,
     StringConstraints, field_validator, model_validator,
@@ -41,17 +42,24 @@ def validate_email(value: str) -> str:
 Email = Annotated[str, StringConstraints(max_length=254), AfterValidator(validate_email)]
 
 
+def valid_database_text(value):
+    if isinstance(value, str):
+        if "\x00" in value:
+            raise ValueError("Null characters are not supported.")
+        value.encode("utf-8")
+    return value
+
+
+SearchText = Annotated[str, Query(max_length=120, pattern=r"^[^\x00]*$")]
+
+
 class Input(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     @field_validator("*", mode="before")
     @classmethod
     def valid_database_text(cls, value):
-        if isinstance(value, str):
-            if "\x00" in value:
-                raise ValueError("Null characters are not supported.")
-            value.encode("utf-8")
-        return value
+        return valid_database_text(value)
 
 
 class LoginIn(Input):

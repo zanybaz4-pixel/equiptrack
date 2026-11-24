@@ -82,8 +82,12 @@ export default function SessionGate() {
         headers: { "X-CSRF-Token": session.csrf_token },
       });
       setSession(null);
+      window.location.replace("#/login");
     } catch (failure) {
-      if (failure.status === 401) setSession(null);
+      if (failure.status === 401) {
+        setSession(null);
+        window.location.replace("#/login");
+      }
       else setError(failure.message);
     } finally {
       setBusy(false);

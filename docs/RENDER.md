@@ -46,6 +46,8 @@ Render's free web service can sleep after 15 minutes without incoming requests. 
 
 ## Verification boundary
 
+The broader November 24 audit is documented in [FLOW_AUDIT_2026-11-24.md](FLOW_AUDIT_2026-11-24.md): 76 backend checks with actual PostgreSQL, 69 isolated HTTPS workflow checks, 10 frontend API regressions and six signed-relay checks passed. It fixes response-body failure handling, account-switch navigation, invalid search characters, local mail egress and Render visitor quotas. Public Render traffic uses Cloudflare's visitor header only from trusted private peers; other private workspace services must remain trusted. This audit preserves existing hosted and local demo records.
+
 Before first cloud deployment, the image built successfully and ran against a separate PostgreSQL 17 test database with a non-superuser migration owner and a 512 MB application limit. Nine deployment-configuration tests and 18 HTTP checks passed, including all three roles, eight catalog items, Secure/HttpOnly/SameSite cookie attributes, signed-out access rejection and CSRF rejection. These HTTP container checks are not browser HTTPS or Render deployment proof. A broader Windows test run was interrupted without a result; no full regression pass is claimed for this increment.
 
 Before relying on this preview for a live assessment, complete the remaining acceptance checks above, including a borrower request, custodian review, return, and cloud persistence after restart. Deployment availability and authentication have been verified; the entire live business workflow is not claimed as tested.
