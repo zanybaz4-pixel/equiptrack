@@ -949,6 +949,7 @@ h1:focus {
   min-height: 180px;
   padding: 22px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 18px;
   border: 1px solid #dfe6ee;
@@ -979,6 +980,11 @@ h1:focus {
   border-radius: 50%;
   background: #fffdf8;
   object-fit: contain;
+}
+.dashboard-campus-card > div {
+  flex: 1 1 160px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .dashboard-campus-card strong {
   display: block;

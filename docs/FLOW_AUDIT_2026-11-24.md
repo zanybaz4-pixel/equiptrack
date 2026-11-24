@@ -14,6 +14,7 @@ Existing hosted records, account passwords and WSL demo data were preserved.
 | Search accepted NUL characters that PostgreSQL rejects, producing 500. | Equipment and request search reject invalid text with 422 before querying. | Two contract regressions and both real HTTPS endpoints. |
 | The local API had only internal Docker networks, preventing Gmail/Brevo HTTPS delivery. | A separate outbound network permits provider HTTPS without publishing API/database ports. | Disposable container: internal-only connection to Google port 443 failed; adding egress succeeded. Compose configuration checked. |
 | Render login/reset limits used ingress proxy addresses, grouping different visitors together. | Render's Cloudflare visitor header determines quotas when supplied by trusted private peers. | Actual nginx reproduction failed before the fix. Separate visitors, burst rejection, forged XFF, untrusted CF headers and the shared recovery limit pass afterward. |
+| The dashboard logo card clipped the department name at medium widths. | The logo and name wrap within the card as space changes. | Reproduced on the hosted dashboard; checked the repaired production bundle at medium, narrow and phone-width layouts. |
 
 ## Verification results
 
