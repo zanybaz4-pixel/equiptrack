@@ -57,6 +57,7 @@ def list_equipment(db: Session, q: str, category_id: int | None,
             EquipmentItem.name.icontains(q, autoescape=True),
             EquipmentItem.asset_code.icontains(q, autoescape=True),
             EquipmentItem.storage_rack.icontains(q, autoescape=True),
+            EquipmentItem.location.icontains(q, autoescape=True),
         ))
     if category_id is not None:
         query = query.where(EquipmentItem.category_id == category_id)

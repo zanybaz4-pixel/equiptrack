@@ -57,6 +57,15 @@ Render's free web service can sleep after 15 minutes without incoming requests. 
 
 ## Verification boundary
 
+Search update, November 25, 2026: catalog/inventory and request searches accept
+equipment names, shared rack codes and location codes (case insensitive, with
+literal wildcard handling). Labels and examples identify all three supported
+values. Availability/status filters still apply; catalog empty results explain
+that All statuses can reveal available items. The reported `MT03.01` failure was
+reproduced before the fix. Verification passed 81 backend checks with disposable
+PostgreSQL, 69 HTTPS workflow checks, 10 frontend API tests and the production
+build, including equipment-name and location-code regression coverage.
+
 The broader November 24 audit is documented in [FLOW_AUDIT_2026-11-24.md](FLOW_AUDIT_2026-11-24.md): 76 backend checks with actual PostgreSQL, 69 isolated HTTPS workflow checks, 10 frontend API regressions and six signed-relay checks passed. It fixes response-body failure handling, account-switch navigation, invalid search characters, local mail egress and Render visitor quotas. Public Render traffic uses Cloudflare's visitor header only from trusted private peers; other private workspace services must remain trusted. This audit preserves existing hosted and local demo records.
 
 Before first cloud deployment, the image built successfully and ran against a separate PostgreSQL 17 test database with a non-superuser migration owner and a 512 MB application limit. Nine deployment-configuration tests and 18 HTTP checks passed, including all three roles, eight catalog items, Secure/HttpOnly/SameSite cookie attributes, signed-out access rejection and CSRF rejection. These HTTP container checks are not browser HTTPS or Render deployment proof. A broader Windows test run was interrupted without a result; no full regression pass is claimed for this increment.

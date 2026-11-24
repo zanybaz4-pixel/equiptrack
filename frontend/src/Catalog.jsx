@@ -52,11 +52,11 @@ export default function Catalog() {
       />
       <form className="work-filters work-panel" onSubmit={search}>
         <label className="work-grow">
-          Equipment or storage rack
+          Equipment name, storage rack or location code
           <input
             name="search"
             type="search"
-            placeholder="Search the catalog"
+            placeholder="e.g. Pliers, MT03 or MT03.01"
             maxLength={120}
           />
         </label>
@@ -86,7 +86,9 @@ export default function Catalog() {
         empty={
           catalog.data?.items.length === 0 &&
           !offset &&
-          "No equipment matches these filters."
+          (availability
+            ? "No equipment matches these filters. Try All statuses or another equipment name, rack or location code."
+            : "No equipment matches this search. Try an equipment name, rack or location code.")
         }
       >
         {(page) => (

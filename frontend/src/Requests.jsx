@@ -429,11 +429,11 @@ export function RequestList({ view, session }) {
       <section className="work-panel work-section" aria-label={config.title}>
         <form className="work-filters work-panel-filters" onSubmit={search}>
           <label className="work-grow">
-            Equipment or storage rack
+            Equipment name, storage rack or location code
             <input
               name="search"
               type="search"
-              placeholder="Search requests"
+              placeholder="e.g. Pliers, MT03 or MT03.01"
               maxLength={120}
             />
           </label>

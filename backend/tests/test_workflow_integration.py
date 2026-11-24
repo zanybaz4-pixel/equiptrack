@@ -518,6 +518,37 @@ def test_imported_directory_is_visible_to_borrowers_and_custodians(workflow):
         assert all(visible[item_id] == values for item_id, values in expected.items())
 
 
+def test_location_code_search_finds_directory_items_and_respects_status_filter(workflow):
+    _, _, actors = workflow
+    borrower = actors["borrower"]
+    borrower.login()
+    for query in ("MT03.01", "mt03.01"):
+        response = borrower.client.get("/api/equipment", params={"q": query, "limit": 100})
+        assert response.status_code == 200
+        page = response.json()
+        assert "Ethyl alcohol" in {row["name"] for row in page["items"]}
+        assert all("MT03.01" in row["location"] for row in page["items"])
+    available = borrower.client.get("/api/equipment", params={"q": "MT03.01", "availability": "available"}).json()
+    assert available["total"] > 0
+    maintenance = borrower.client.get("/api/equipment", params={"q": "MT03.01", "availability": "maintenance"}).json()
+    assert maintenance["total"] == 0 and maintenance["items"] == []
+    by_name = borrower.client.get("/api/equipment", params={"q": "ethyl ALCOHOL"}).json()
+    assert [row["name"] for row in by_name["items"]] == ["Ethyl alcohol"]
+
+
+def test_request_search_finds_equipment_location_with_literal_wildcards(workflow, clock):
+    owner, item, actors = workflow
+    location = f"Location%_only-{uuid4().hex[:10]}"
+    with owner.begin() as db:
+        db.execute(text("UPDATE equipment_items SET location=:location WHERE id=:id"), {"location": location, "id": item["id"]})
+    borrower = actors["borrower"]
+    created = create_request(borrower, item, clock.instant + timedelta(hours=1), clock.instant + timedelta(hours=2))
+    assert created.status_code == 201
+    response = borrower.client.get("/api/requests", params={"q": location.lower()})
+    assert response.status_code == 200
+    assert [row["id"] for row in response.json()] == [created.json()["id"]]
+
+
 def test_expired_forged_and_logged_out_sessions(workflow):
     owner, _, actors = workflow
     borrower, other = actors["borrower"], actors["other"]

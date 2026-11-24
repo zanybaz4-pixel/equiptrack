@@ -206,12 +206,12 @@ export function Inventory({ session }) {
           }}
         >
           <label className="work-grow">
-            Equipment or storage rack
+            Equipment name, storage rack or location code
             <input
               type="search"
               name="search"
               maxLength={120}
-              placeholder="Search inventory"
+              placeholder="e.g. Pliers, MT03 or MT03.01"
             />
           </label>
           <label>
@@ -284,7 +284,7 @@ export function Inventory({ session }) {
                 </div>
               ) : (
                 <p className="work-state">
-                  No equipment matches these filters.
+                  No equipment matches these filters. Try All statuses or another equipment name, rack or location code.
                 </p>
               )}
               <Pager

@@ -117,7 +117,8 @@ def list_requests(db: DB, principal: Current, status: RequestStatus | None = Non
     if q.strip():
         statement = statement.where(or_(EquipmentItem.name.icontains(q.strip(), autoescape=True),
                                         EquipmentItem.asset_code.icontains(q.strip(), autoescape=True),
-                                        EquipmentItem.storage_rack.icontains(q.strip(), autoescape=True)))
+                                        EquipmentItem.storage_rack.icontains(q.strip(), autoescape=True),
+                                        EquipmentItem.location.icontains(q.strip(), autoescape=True)))
     statement = statement.order_by(BorrowingRequest.created_at.desc(), BorrowingRequest.id.desc()).offset(offset).limit(limit)
     return [serialize_request(row, item, loan, now, borrower_name)
             for row, item, loan, borrower_name in db.execute(statement)]
