@@ -57,6 +57,16 @@ Render's free web service can sleep after 15 minutes without incoming requests. 
 
 ## Verification boundary
 
+Button and header update, November 25, 2026: the top-bar breadcrumb is removed
+at the owner's request. Buttons across sign-in, recovery, forms, dialogs,
+inventory, request actions, pagination, return-view selectors and navigation
+controls share raised maroon/ivory surfaces, solid lower edges, soft shadows
+and pressed states. Destructive controls retain a red treatment. Keyboard focus,
+disabled states, reduced-motion and forced-color preferences remain supported.
+Local browser review covered inventory, Add equipment/Cancel/Close, return-view
+selectors, sign-in, recovery and keyboard focus. Ten frontend tests and the
+production build passed; the change does not modify equipment or loan records.
+
 Search update, November 25, 2026: catalog/inventory and request searches accept
 equipment names, shared rack codes and location codes (case insensitive, with
 literal wildcard handling). Labels and examples identify all three supported

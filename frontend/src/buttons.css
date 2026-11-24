@@ -1,0 +1,152 @@
+/* Raised controls, with shared states across the workspace and sign-in pages. */
+:is(.work-shell, .login-page) :is(
+  button, .primary-button, .secondary-button, .danger-button,
+  .text-button, .request-open-button, .login-submit
+) {
+  --button-face: linear-gradient(180deg, #ffffff 0%, #fffdf9 45%, #f2e9e6 100%);
+  --button-edge: #c5acae;
+  --button-ink: #713047;
+  --button-light: rgb(255 255 255 / 95%);
+  --button-border: #e1ced0;
+  --button-shade: rgb(78 34 48 / 13%);
+  border: 1px solid var(--button-border);
+  border-radius: 10px;
+  background: var(--button-face);
+  color: var(--button-ink);
+  box-shadow:
+    inset 0 1px 0 var(--button-light),
+    inset 0 -1px 0 rgb(0 0 0 / 4%),
+    0 3px 0 var(--button-edge),
+    0 6px 12px -4px var(--button-shade);
+  padding: 9px 14px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  text-decoration: none;
+  transform: translateY(0);
+  transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+}
+
+:is(.work-shell, .login-page) :is(.primary-button, .login-submit),
+.work-return-switch button[aria-pressed="true"] {
+  --button-face: linear-gradient(180deg, #a84c68 0%, #91354f 48%, #7c263f 100%);
+  --button-edge: #56182c;
+  --button-ink: #fffaf5;
+  --button-light: rgb(255 224 160 / 42%);
+  --button-border: #8c304b;
+  --button-shade: rgb(91 24 46 / 28%);
+  background: var(--button-face);
+  color: var(--button-ink);
+  border-color: var(--button-border);
+  text-shadow: 0 1px 1px rgb(49 8 25 / 24%);
+}
+
+:is(.work-shell, .login-page) .danger-button {
+  --button-face: linear-gradient(180deg, #fffaf8, #fbe8e4);
+  --button-edge: #c99086;
+  --button-ink: #913e35;
+  --button-border: #edc4ba;
+  --button-shade: rgb(139 57 41 / 17%);
+}
+
+:is(.work-shell, .login-page) :is(
+  button, .primary-button, .secondary-button, .danger-button,
+  .text-button, .request-open-button, .login-submit
+):hover:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--button-face);
+  color: var(--button-ink);
+  border-color: var(--button-border);
+  box-shadow:
+    inset 0 1px 0 var(--button-light),
+    0 4px 0 var(--button-edge),
+    0 9px 16px -5px var(--button-shade);
+  filter: brightness(1.035);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+:is(.work-shell, .login-page) :is(
+  button, .primary-button, .secondary-button, .danger-button,
+  .text-button, .request-open-button, .login-submit
+):active:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--button-face);
+  box-shadow:
+    inset 0 2px 3px rgb(0 0 0 / 10%),
+    inset 0 1px 0 var(--button-light),
+    0 1px 0 var(--button-edge),
+    0 2px 5px -2px var(--button-shade);
+  filter: brightness(0.98);
+  transform: translateY(2px);
+}
+
+:is(.work-shell, .login-page) :is(
+  button, .primary-button, .secondary-button, .danger-button,
+  .text-button, .request-open-button, .login-submit
+):focus-visible {
+  outline: 3px solid #9a711c;
+  outline-offset: 5px;
+}
+
+:is(.work-shell, .login-page) :is(button:disabled, [aria-disabled="true"]) {
+  box-shadow: inset 0 1px 0 var(--button-light), 0 1px 0 var(--button-edge);
+  filter: saturate(0.4);
+  opacity: 0.5;
+  transform: none;
+  cursor: not-allowed;
+}
+
+:is(.work-shell, .login-page) :is(.icon-button, .login-password-toggle) {
+  padding: 0;
+  border-radius: 9px;
+  box-shadow: inset 0 1px 0 var(--button-light), 0 2px 0 var(--button-edge), 0 4px 8px -4px var(--button-shade);
+}
+
+.work-shell :is(.text-button, .request-open-button) {
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.work-sidebar-footer > button {
+  width: 100%;
+  padding: 9px 10px;
+  font-size: 12px;
+}
+
+.work-shell .work-signout {
+  min-height: 34px;
+  padding: 7px 10px;
+}
+
+.login-page .login-submit {
+  min-height: 51px;
+}
+
+@media (max-width: 575px) {
+  .work-shell .work-signout {
+    padding: 7px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.work-shell, .login-page) :is(button, a):is(:hover, :active) {
+    transform: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  :is(.work-shell, .login-page) :is(button, .primary-button, .secondary-button, .danger-button, .text-button, .request-open-button, .login-submit) {
+    background: ButtonFace !important;
+    color: ButtonText !important;
+    border-color: ButtonText !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+  }
+  .work-return-switch button[aria-pressed="true"] {
+    background: Highlight !important;
+    color: HighlightText !important;
+    text-decoration: underline !important;
+    text-underline-offset: 0.2em;
+  }
+}
