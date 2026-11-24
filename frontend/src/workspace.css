@@ -183,12 +183,20 @@
   gap: 12px;
   font-size: 14px;
   white-space: nowrap;
+  min-width: 0;
+}
+.work-topbar > .work-inline {
+  min-width: 0;
+  flex: 1;
 }
 .work-topbar-context > span {
   color: #80727b;
+  white-space: normal;
+  min-width: 0;
 }
 .work-topbar-context > svg {
   color: #bdb0b6;
+  flex-shrink: 0;
 }
 .work-topbar-context strong {
   color: #54434c;

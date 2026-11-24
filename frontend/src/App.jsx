@@ -55,7 +55,7 @@ function navMatches(path, route) {
 
 function Navigation({ items, path, close, grouped = false }) {
   return (
-    <nav className="work-nav" aria-label="Workspace">
+    <nav className="work-nav" aria-label="Department navigation">
       {items.map(([route, title, Icon], index) => (
         <div key={route}>
           {grouped &&
@@ -64,7 +64,7 @@ function Navigation({ items, path, close, grouped = false }) {
               route === "/profile") && (
               <p className="work-nav-group">
                 {index === 0
-                  ? "Workspace"
+                  ? "Department"
                   : route === "/profile"
                     ? "Account"
                     : "Management"}
@@ -256,7 +256,7 @@ export default function App({
               <Menu size={22} />
             </button>
             <span className="work-topbar-context">
-              <span>Workspace</span>
+              <span>{DEPARTMENT_NAME}</span>
               <ChevronRight size={13} aria-hidden="true" />
               <strong>{section || `${role} workspace`}</strong>
             </span>
