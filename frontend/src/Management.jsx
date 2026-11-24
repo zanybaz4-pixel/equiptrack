@@ -399,11 +399,6 @@ function AccountEditor({ account, session, close, completed }) {
       else {
         body.email = data.get("email").trim();
         body.password = data.get("password");
-        if (!body.email.toLowerCase().endsWith("@example.invalid")) {
-          throw new Error(
-            "Use a synthetic address ending in @example.invalid.",
-          );
-        }
       }
       const result = await write(
         session,
@@ -426,8 +421,8 @@ function AccountEditor({ account, session, close, completed }) {
         aria-describedby="account-privacy"
       >
         <p className="work-muted" id="account-privacy">
-          Use fictional names and example.invalid addresses. The role controls
-          access, and passwords are stored as hashes.
+          Use an email address you own, including Gmail. It will be your
+          EquipTrack sign-in email. Passwords are stored as hashes.
         </p>
         <fieldset className="work-form-fields" disabled={mutation.busy}>
           <label>
@@ -448,7 +443,8 @@ function AccountEditor({ account, session, close, completed }) {
                 <input
                   name="email"
                   type="email"
-                  placeholder="name@example.invalid"
+                  placeholder="name@gmail.com"
+                  autoComplete="email"
                   required
                   maxLength={254}
                 />
@@ -531,7 +527,7 @@ export function Accounts({ session, updateUser }) {
     <>
       <PageTitle
         title="User management"
-        description="Create synthetic accounts and manage access."
+        description="Create accounts and manage access."
       >
         <button className="primary-button" onClick={() => setEditor({})}>
           <Plus size={16} /> Add account

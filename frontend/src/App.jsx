@@ -91,13 +91,15 @@ function Privacy({ close }) {
     <Dialog title="Privacy and data use" close={close}>
       <div className="work-dialog-form">
         <p>
-          Use synthetic data for this demonstration. The custodian can see
-          account names, borrowing details and equipment history. Borrowers can
-          view their own requests and update their display name.
+          The custodian can see account names, sign-in email addresses,
+          borrowing details and equipment history. Borrowers can view their own
+          requests and update their display name.
         </p>
         <p>
-          EquipTrack uses a session cookie to keep you signed in. Avoid entering
-          real names, email addresses or sensitive information in forms and
+          EquipTrack uses your email address to identify your account and a
+          session cookie to keep you signed in. Use a separate EquipTrack
+          password, not your Gmail password. Keep borrowing records fictional
+          for the academic demonstration and avoid sensitive information in
           remarks.
         </p>
         <div className="work-actions">

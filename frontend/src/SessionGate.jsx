@@ -175,7 +175,7 @@ export default function SessionGate() {
           </p>
           <p className="login-demo-note">
             <ShieldCheck size={15} aria-hidden="true" />
-            Academic project · Synthetic data only
+            Academic project · Equipment borrowing workspace
           </p>
         </section>
       </div>

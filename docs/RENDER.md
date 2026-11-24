@@ -14,6 +14,12 @@ Deployed November 22, 2026, Asia/Manila. This is an additional internet-accessib
 
 The laptop's existing data is preserved. The cloud demo starts with its own synthetic catalog and accounts. Passwords remain in Render's private Environment settings.
 
+## Account email addresses
+
+At the user's request on November 24, 2026, account creation accepts Gmail and other valid email addresses. The previous `@example.invalid` restriction was in the account form; the API already validates and normalizes general email addresses. Existing demo accounts remain unchanged. The email identifies an EquipTrack account: this does not implement Google sign-in, email verification, or email delivery. Choose a separate EquipTrack password of at least 12 characters.
+
+This user-requested extension permits personal sign-in emails in the cloud preview. The brief's synthetic-data requirement still applies to academic test records and submitted evidence; use the seeded fictional accounts for that demonstration.
+
 ## Deployment
 
 Use the existing private `zanybaz4-pixel/equiptrack` repository, branch `codex/render-deployment`, and root `render.yaml` as a Render Blueprint. Both resources explicitly use `plan: free`, in Singapore. Review the resource summary before deploying. A separate Hobby workspace can keep this deployment apart from other projects and their free database allowance. Do not replace, reset, or delete another project's database.
