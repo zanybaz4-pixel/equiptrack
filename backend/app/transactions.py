@@ -19,7 +19,7 @@ def persist(db: Session):
     except IntegrityError as exc:
         name = getattr(getattr(exc.orig, "diag", None), "constraint_name", None)
         conflicts = {
-            "no_overlapping_reservations": "The requested period overlaps an existing reservation.",
+            "no_overlapping_reservations": "This equipment is already reserved for these dates. Choose another time or another item.",
             "one_active_loan_per_item": "This item is already checked out.",
             "loan_records_request_id_key": "This request already has a release record.",
             "users_email_key": "An account already uses that email address.",

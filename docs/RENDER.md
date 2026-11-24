@@ -38,6 +38,8 @@ The database's external IP allowlist is empty. Only Render's private network can
 
 ## Free-plan limits
 
+Student reservation guidance, November 24, 2026: the borrowing form checks the selected dates automatically, keeps submission disabled until availability is confirmed, and explains reservations with a link to choose another item. Date changes clear previous submission errors. A reservation created during submission refreshes availability and retains the student's form entries. Custodian approval also checks the request's dates before enabling approval and provides a route to review existing requests when unavailable. Existing reservation and custody rules remain enforced by the API and PostgreSQL. Local browser checks verified reserved dates, available-date submission, and a simulated reservation race; isolated PostgreSQL tests verified concurrent approvals and custody behavior.
+
 Render's free web service can sleep after 15 minutes without incoming requests. Its free PostgreSQL database expires 30 days after creation and is not durable long-term hosting. Record the actual expiry date from the database dashboard. Export a reviewed backup before expiry if the demo has records you need to keep. The existing local backup/restore scripts continue to apply to the laptop deployment; they are not Render backup automation.
 
 ## Verification boundary

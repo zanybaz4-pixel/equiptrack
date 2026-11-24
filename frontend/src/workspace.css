@@ -433,6 +433,25 @@ h1:focus {
   font-size: 14px;
   line-height: 1.7;
 }
+.work-availability-note {
+  display: grid;
+  gap: 7px;
+  padding: 15px 17px;
+  border: 1px solid;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.work-availability-note.is-available {
+  color: #245d43;
+  background: #eff9f4;
+  border-color: #cfe8db;
+}
+.work-availability-note.is-unavailable {
+  color: #775519;
+  background: #fff8e8;
+  border-color: #ebd9aa;
+}
 .work-error {
   background: #fff4f2;
   color: #a2453b;

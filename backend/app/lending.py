@@ -42,7 +42,7 @@ def check_reservation(db: Session, item: EquipmentItem, start: datetime, end: da
         BorrowingRequest.borrow_at < end, BorrowingRequest.due_at > start,
     ).limit(1))
     if overlap is not None:
-        raise HTTPException(409, "The requested period overlaps an existing reservation.")
+        raise HTTPException(409, "This equipment is already reserved for these dates. Choose another time or another item.")
     loan = active_loan(db, item.id)
     if loan is not None:
         due = db.scalar(select(BorrowingRequest.due_at).where(BorrowingRequest.id == loan.request_id))

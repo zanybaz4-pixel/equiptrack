@@ -509,10 +509,15 @@ const actions = {
 function RequestAction({ type, row, session, close, completed }) {
   const mutation = useMutation();
   const action = actions[type];
+  const availability = useResource(type === "approve"
+    ? endpoint(`/equipment/${row.equipment_id}`, { borrow_at: row.borrow_at, due_at: row.due_at })
+    : null);
+  const approvalBlocked = type === "approve" && availability.data?.availability !== "available";
   function submit(event) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     mutation.run(async () => {
+      if (approvalBlocked) throw new Error("The equipment must be available for these dates before approval.");
       const remarks = data.get("remarks")?.trim() || undefined;
       let body;
       if (type === "approve" || type === "reject")
@@ -522,12 +527,17 @@ function RequestAction({ type, row, session, close, completed }) {
         };
       if (type === "release" || type === "return")
         body = { condition: data.get("condition"), remarks };
-      await write(
-        session,
-        action.method,
-        `/requests/${row.id}${action.suffix}`,
-        body,
-      );
+      try {
+        await write(
+          session,
+          action.method,
+          `/requests/${row.id}${action.suffix}`,
+          body,
+        );
+      } catch (failure) {
+        if (type === "approve" && failure.status === 409) availability.reload();
+        throw failure;
+      }
       completed(action.success);
     });
   }
@@ -535,6 +545,23 @@ function RequestAction({ type, row, session, close, completed }) {
     <Dialog title={action.title} busy={mutation.busy} close={close}>
       <form className="work-dialog-form" onSubmit={submit}>
         <p>{action.copy}</p>
+        {type === "approve" && (
+          <>
+            <Fields entries={[["Borrow from", displayDate(row.borrow_at)], ["Return by", displayDate(row.due_at)]]} />
+            {availability.loading && <p role="status">Checking equipment availability…</p>}
+            <ActionError error={availability.error?.message} />
+            {availability.error && <button className="secondary-button" type="button" onClick={availability.reload}>Retry availability check</button>}
+            {availability.data && approvalBlocked && (
+              <div className="work-availability-note is-unavailable" role="status">
+                <strong>This request cannot be approved for these dates</strong>
+                <p>{availability.data.availability === "reserved"
+                  ? "The equipment already has a reservation during this period. The borrower needs different dates, or the existing reservation must be reviewed."
+                  : "The equipment is checked out or unavailable during this period. Review its custody and service status before approving."}</p>
+                <a className="text-button" href="#/admin/history" onClick={close}>Review existing requests</a>
+              </div>
+            )}
+          </>
+        )}
         <fieldset className="work-form-fields" disabled={mutation.busy}>
           {(type === "release" || type === "return") && (
             <label>
@@ -568,6 +595,7 @@ function RequestAction({ type, row, session, close, completed }) {
         <ActionError error={mutation.error} />
         <FormActions
           busy={mutation.busy}
+          disabled={approvalBlocked}
           submit={action.verb}
           close={close}
           danger={type === "cancel" || type === "reject"}
