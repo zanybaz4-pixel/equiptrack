@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   ArrowDownToLine,
   ArrowUpFromLine,
-  ChevronRight,
   ClipboardCheck,
   ClipboardList,
   Clock3,
@@ -179,7 +178,6 @@ export default function App({
   const admin = session.user.role === "admin";
   const items = admin ? adminNav : borrowerNav;
   const role = admin ? "Custodian" : "Borrower";
-  const section = items.find(([route]) => navMatches(path, route))?.[1];
   const initials = session.user.full_name
     .trim()
     .split(/\s+/)
@@ -255,11 +253,6 @@ export default function App({
             >
               <Menu size={22} />
             </button>
-            <span className="work-topbar-context">
-              <span>{DEPARTMENT_NAME}</span>
-              <ChevronRight size={13} aria-hidden="true" />
-              <strong>{section || `${role} workspace`}</strong>
-            </span>
           </div>
           <div className="work-topbar-account">
             <time className="work-today" dateTime={new Date().toISOString()}>

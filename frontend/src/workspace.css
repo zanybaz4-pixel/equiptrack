@@ -177,30 +177,9 @@
     var(--brand-accent) 72%
   );
 }
-.work-topbar-context {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-  white-space: nowrap;
-  min-width: 0;
-}
 .work-topbar > .work-inline {
   min-width: 0;
   flex: 1;
-}
-.work-topbar-context > span {
-  color: #80727b;
-  white-space: normal;
-  min-width: 0;
-}
-.work-topbar-context > svg {
-  color: #bdb0b6;
-  flex-shrink: 0;
-}
-.work-topbar-context strong {
-  color: #54434c;
-  font-weight: 500;
 }
 .work-topbar-account {
   display: flex;
@@ -1276,12 +1255,6 @@ h1:focus {
   }
 }
 @media (max-width: 575px) {
-  .work-topbar-context {
-    gap: 7px;
-    font-size: 14px;
-  }
-  .work-topbar-context > span,
-  .work-topbar-context > svg,
   .work-account-name {
     display: none;
   }
