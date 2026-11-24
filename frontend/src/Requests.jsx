@@ -94,7 +94,7 @@ export function RequestTable({ items, admin, completedReturns = false }) {
                   <span className="request-equipment-name">
                     {row.equipment_name}
                     <small>
-                      #{row.id} · {row.asset_code}
+                      #{row.id} · {row.storage_rack ?? row.asset_code}
                     </small>
                   </span>
                 </a>
@@ -641,7 +641,7 @@ export function RequestDetails({ id, session }) {
       </a>
       <PageTitle
         title={row?.equipment_name || `Request #${id}`}
-        description={row ? `Request #${id} · ${row.asset_code}` : undefined}
+        description={row ? `Request #${id} · ${row.storage_rack ?? row.asset_code}` : undefined}
       >
         {row && <RequestBadge row={row} />}
       </PageTitle>

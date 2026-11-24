@@ -1,5 +1,16 @@
 # Database design and dictionary
 
+Tool Room Directory import, November 25, 2026: revision `0005_storage_rack`
+separates the shared, displayed `storage_rack` (40 characters) from unique
+internal `asset_code`. A nullable unique `directory_key` records import identity.
+Revision `0006_tool_room_directory` loads 174 owner-reviewed directory entries
+from `backend/migrations/data/tool_room_directory_2026.json`. New rows use Good /
+Serviceable as requested; single unambiguous existing name matches retain their
+IDs, condition, service status and borrowing history. Existing records are never
+deleted. Rack codes are searchable and may repeat across items. Migration
+revisions and directory keys prevent repeated-deployment duplication. Legacy
+asset-code API clients remain supported.
+
 PostgreSQL 17; revision `0001_initial`. The authoritative DDL is `backend/migrations/versions/0001_initial.sql`; Alembic executes it transactionally. The schema has exactly the six proposed business tables plus Alembic's technical version table. All foreign keys restrict deletion. All IDs are generated `bigint` identity primary keys. All timestamps are timezone-aware. Dates in examples are synthetic.
 
 Department interface update, November 24, 2026: forward revision `0004_optional_equipment_category` makes `equipment_items.category_id` optional. New equipment does not require a category, and catalog queries include uncategorized equipment. Existing category assignments and records are preserved when editing without a category. Category controls and labels are removed from all user interfaces; the legacy API fields remain compatible. The remaining dictionary documents the original business-table foundation; later migrations also add sessions and password-recovery tables.

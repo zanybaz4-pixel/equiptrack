@@ -1,5 +1,6 @@
 from datetime import UTC, datetime
 from typing import Annotated
+from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException, Path, Query
 from sqlalchemy import delete, func, select, text
@@ -103,7 +104,10 @@ def save_equipment(db: DB, item: EquipmentItem, actor_id: int, action: str):
 def create_equipment(body: EquipmentIn, db: DB, principal: AdminWriter):
     if body.category_id is not None and db.get(Category, body.category_id) is None:
         raise HTTPException(404, "Equipment category not found.")
-    item = EquipmentItem(**body.model_dump(), created_at=datetime.now(UTC))
+    values = body.model_dump()
+    values["asset_code"] = body.asset_code or "ET-" + uuid4().hex
+    values["storage_rack"] = body.storage_rack or body.asset_code
+    item = EquipmentItem(**values, created_at=datetime.now(UTC))
     db.add(item)
     return save_equipment(db, item, principal.user.id, "equipment.created")
 
@@ -122,7 +126,7 @@ def update_equipment(equipment_id: ResourceId, body: EquipmentIn, db: DB, princi
     ).limit(1)) is not None:
         raise HTTPException(409, "This item still has an approved reservation.")
     for field, value in body.model_dump().items():
-        if field == "category_id" and value is None:
+        if field in ("category_id", "asset_code", "storage_rack") and value is None:
             continue
         setattr(item, field, value)
     return save_equipment(db, item, principal.user.id, "equipment.updated")

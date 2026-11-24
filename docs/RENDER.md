@@ -4,6 +4,17 @@ Deployed November 22, 2026, Asia/Manila. This is an additional internet-accessib
 
 ## Live deployment
 
+November 25 directory import: the owner requested all 174 transcribed Tool Room
+Directory rows in Equipment Inventory, available for admin review. New entries
+use Good / Serviceable. Shared rack codes are stored separately from unique
+internal item codes. A one-time migration preserves any matched item IDs and
+custody history, and stable directory keys prevent duplicate imports. Unclear
+handwriting is noted; the blank Welding Apron location is `Not recorded`.
+Pre-deployment verification passed 79 backend checks with disposable PostgreSQL,
+69 HTTPS workflow checks, 10 frontend API tests, six relay tests and the production
+build. Migration verification checked all 174 rows, an existing active loan and
+condition, and an unchanged item count after repeated upgrade.
+
 - URL: https://equiptrack-5r6t.onrender.com/
 - Workspace: EquipTrack; free web service and free PostgreSQL, Singapore.
 - Deployed application commit: `d6443048bcbde14a6d0cb563dc8a7d94e701da7e`, branch `codex/render-deployment`.

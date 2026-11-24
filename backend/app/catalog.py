@@ -39,6 +39,7 @@ def availability_expression(now: datetime, start: datetime | None = None, end: d
 def catalog_query(now: datetime | None = None, start: datetime | None = None, end: datetime | None = None):
     return select(
         EquipmentItem.id, EquipmentItem.asset_code, EquipmentItem.name,
+        func.coalesce(EquipmentItem.storage_rack, EquipmentItem.asset_code).label("storage_rack"),
         EquipmentItem.description, EquipmentItem.location, EquipmentItem.category_id,
         Category.name.label("category"), EquipmentItem.condition,
         availability_expression(now or datetime.now(timezone.utc), start, end),
@@ -55,6 +56,7 @@ def list_equipment(db: Session, q: str, category_id: int | None,
         query = query.where(or_(
             EquipmentItem.name.icontains(q, autoescape=True),
             EquipmentItem.asset_code.icontains(q, autoescape=True),
+            EquipmentItem.storage_rack.icontains(q, autoescape=True),
         ))
     if category_id is not None:
         query = query.where(EquipmentItem.category_id == category_id)

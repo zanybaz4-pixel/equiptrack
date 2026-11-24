@@ -123,7 +123,8 @@ class CategoryIn(Input):
 
 class EquipmentIn(Input):
     category_id: PositiveId | None = None
-    asset_code: Annotated[str, StringConstraints(strip_whitespace=True, to_upper=True, min_length=1, max_length=40)]
+    asset_code: Annotated[str, StringConstraints(strip_whitespace=True, to_upper=True, min_length=1, max_length=40)] | None = None
+    storage_rack: Annotated[str, StringConstraints(strip_whitespace=True, to_upper=True, min_length=1, max_length=40)] | None = None
     name: Name
     location: Name
     description: Annotated[str, StringConstraints(strip_whitespace=True, max_length=1000)] = ""
@@ -132,6 +133,8 @@ class EquipmentIn(Input):
 
     @model_validator(mode="after")
     def check_damage(self):
+        if self.asset_code is None and self.storage_rack is None:
+            raise ValueError("Enter a storage rack.")
         if self.condition == "damaged" and self.service_status == "serviceable":
             raise ValueError("Damaged equipment cannot be marked serviceable.")
         return self
@@ -193,6 +196,7 @@ class RequestOut(BaseModel):
     created_at: datetime
     equipment_name: str
     asset_code: str
+    storage_rack: str | None = None
     equipment_state: ServiceStatus
     loan: LoanOut | None
     is_overdue: bool

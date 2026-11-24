@@ -14,6 +14,7 @@ ITEM = {
     "id": 1, "asset_code": "ET-TEST-001", "name": "Synthetic projector",
     "description": "Synthetic test item", "location": "Test cabinet", "category_id": 1,
     "category": "Presentation", "condition": "good", "availability": "available",
+    "storage_rack": "ET-TEST-001",
 }
 
 

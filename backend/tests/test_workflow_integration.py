@@ -42,7 +42,7 @@ def engines():
     try:
         with owner_engine.connect() as db:
             # Fail early if this is the wrong schema instead of trying to mutate it.
-            assert db.scalar(text("SELECT version_num FROM alembic_version")) == "0004_optional_equipment_category"
+            assert db.scalar(text("SELECT version_num FROM alembic_version")) == "0006_tool_room_directory"
         yield owner_engine, runtime_engine
     finally:
         runtime_engine.dispose()
@@ -474,6 +474,48 @@ def test_edit_without_category_preserves_legacy_equipment_category(workflow):
     assert edited.status_code == 200
     assert edited.json()["category_id"] == current["category_id"]
     assert edited.json()["category"] == current["category"]
+
+
+def test_equipment_can_share_a_storage_rack_and_keep_distinct_identity(workflow):
+    _, _, actors = workflow
+    custodian, borrower = actors["custodian"], actors["borrower"]
+    rack = f"RACK-{uuid4().hex[:10].upper()}"
+    body = {"name": "Shared rack tool one", "storage_rack": rack, "location": "MT01.02",
+            "condition": "good", "service_status": "serviceable"}
+    first = custodian.write("POST", "/api/equipment", body)
+    assert first.status_code == 201, first.json()
+    second = custodian.write("POST", "/api/equipment", {**body, "name": "Shared rack tool two"})
+    assert second.status_code == 201, second.json()
+    assert first.json()["asset_code"] != second.json()["asset_code"]
+    assert first.json()["storage_rack"] == second.json()["storage_rack"] == rack
+    borrower.login()
+    found = borrower.client.get("/api/equipment", params={"q": rack}).json()
+    assert {row["id"] for row in found["items"]} == {first.json()["id"], second.json()["id"]}
+    updated = custodian.write("PUT", f"/api/equipment/{first.json()['id']}", {**body, "storage_rack": "MT08"})
+    assert updated.status_code == 200, updated.json()
+    assert updated.json()["asset_code"] == first.json()["asset_code"]
+    assert updated.json()["storage_rack"] == "MT08"
+
+
+def test_imported_directory_is_visible_to_borrowers_and_custodians(workflow):
+    owner, _, actors = workflow
+    with owner.connect() as db:
+        imported = db.execute(text("SELECT id,storage_rack,location FROM equipment_items WHERE directory_key IS NOT NULL")).all()
+    assert len(imported) == 174
+    expected = {row.id: (row.storage_rack, row.location) for row in imported}
+    for key in ("borrower", "custodian"):
+        actor = actors[key]
+        actor.login()
+        visible = {}
+        offset = 0
+        while True:
+            response = actor.client.get("/api/equipment", params={"offset": offset, "limit": 100})
+            assert response.status_code == 200, response.json()
+            page = response.json()
+            visible.update({row["id"]: (row["storage_rack"], row["location"]) for row in page["items"]})
+            offset += 100
+            if offset >= page["total"]: break
+        assert all(visible[item_id] == values for item_id, values in expected.items())
 
 
 def test_expired_forged_and_logged_out_sessions(workflow):

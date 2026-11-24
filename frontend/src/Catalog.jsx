@@ -104,7 +104,7 @@ export default function Catalog() {
                     </div>
                     <div className="work-equipment-body">
                       <p className="work-muted">
-                        {item.asset_code}
+                        {item.storage_rack ?? item.asset_code}
                       </p>
                       <h2>
                         <a href={`#/equipment/${item.id}`}>{item.name}</a>
@@ -154,7 +154,7 @@ export function EquipmentDetails({ id, session }) {
           <section className="work-panel work-detail">
             <Fields
               entries={[
-                ["Storage Rack", data.asset_code],
+                ["Storage Rack", data.storage_rack ?? data.asset_code],
                 ["Location Code", data.location],
                 ["Condition", label(data.condition)],
                 ["Current availability", <Badge value={data.availability} />],
@@ -252,7 +252,7 @@ function BorrowForm({ item, session }) {
       aria-describedby="request-privacy"
     >
       <p className="work-form-intro">
-        {item.asset_code} · {item.name}
+        {item.storage_rack ?? item.asset_code} · {item.name}
       </p>
       <fieldset disabled={busy} className="work-form-fields">
         <p className="work-muted">

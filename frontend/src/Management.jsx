@@ -37,13 +37,13 @@ function EquipmentEditor({ item, session, close, completed }) {
     mutation.run(async () => {
       const body = {
         name: data.get("name").trim(),
-        asset_code: data.get("asset_code").trim(),
+        storage_rack: data.get("storage_rack").trim(),
         location: data.get("location").trim(),
         description: item ? data.get("description").trim() : "",
         condition,
         service_status: status,
       };
-      if (!body.name || !body.asset_code || !body.location)
+      if (!body.name || !body.storage_rack || !body.location)
         throw new Error("Enter an equipment name, storage rack and location code.");
       await write(
         session,
@@ -75,8 +75,8 @@ function EquipmentEditor({ item, session, close, completed }) {
             <label>
               Storage Rack
               <input
-                name="asset_code"
-                defaultValue={item?.asset_code}
+                name="storage_rack"
+                defaultValue={item?.storage_rack ?? item?.asset_code}
                 required
                 maxLength={40}
               />
@@ -256,7 +256,7 @@ export function Inventory({ session }) {
                           <th scope="row">
                             {item.name}
                             <span>
-                              {item.asset_code}
+                              {item.storage_rack ?? item.asset_code}
                             </span>
                           </th>
                           <td data-label="Location Code">{item.location}</td>

@@ -67,6 +67,7 @@ def serialize_request(row: BorrowingRequest, item: EquipmentItem, loan: LoanReco
         decided_by=row.decided_by, decided_at=row.decided_at, decision_remarks=row.decision_remarks,
         canceled_at=row.canceled_at, created_at=row.created_at, equipment_name=item.name,
         asset_code=item.asset_code, equipment_state=item.service_status,
+        storage_rack=item.storage_rack or item.asset_code,
         loan=LoanOut.model_validate(loan) if loan is not None else None,
         is_overdue=bool(loan and loan.returned_at is None and now > row.due_at),
         was_returned_late=bool(loan and loan.returned_at and loan.returned_at > row.due_at),
@@ -115,7 +116,8 @@ def list_requests(db: DB, principal: Current, status: RequestStatus | None = Non
         statement = statement.where(BorrowingRequest.due_at < now)
     if q.strip():
         statement = statement.where(or_(EquipmentItem.name.icontains(q.strip(), autoescape=True),
-                                        EquipmentItem.asset_code.icontains(q.strip(), autoescape=True)))
+                                        EquipmentItem.asset_code.icontains(q.strip(), autoescape=True),
+                                        EquipmentItem.storage_rack.icontains(q.strip(), autoescape=True)))
     statement = statement.order_by(BorrowingRequest.created_at.desc(), BorrowingRequest.id.desc()).offset(offset).limit(limit)
     return [serialize_request(row, item, loan, now, borrower_name)
             for row, item, loan, borrower_name in db.execute(statement)]
