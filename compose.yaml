@@ -48,6 +48,9 @@ services:
       APP_ENV: ${APP_ENV:-development}
       BREVO_API_KEY: ${BREVO_API_KEY:-}
       MAIL_FROM_EMAIL: ${MAIL_FROM_EMAIL:-}
+      RECOVERY_MAIL_PROVIDER: ${RECOVERY_MAIL_PROVIDER:-brevo}
+      GMAIL_SCRIPT_URL: ${GMAIL_SCRIPT_URL:-}
+      GMAIL_RELAY_SECRET: ${GMAIL_RELAY_SECRET:-}
     depends_on:
       migrate: { condition: service_completed_successfully }
     expose: ["8000"]

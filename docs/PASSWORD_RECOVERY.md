@@ -4,6 +4,8 @@ The sign-in page includes **Forgot password?**. Recovery uses a single-use email
 
 ## Delivery setup
 
+The user chose the [Gmail delivery alternative](GMAIL_DELIVERY.md) after Brevo's phone-verification step could not be completed. That provider uses signed HTTPS requests and Google's send-email permission. The Brevo instructions below remain an optional alternative. Real inbox delivery is pending until the chosen provider is authorized and configured.
+
 The implementation uses Brevo's HTTPS transactional email API. Render's free web services block outbound SMTP ports 25, 465 and 587, so a Gmail SMTP password is not the delivery configuration for this deployment.
 
 1. Create a free Brevo account and complete its required profile. The account owner supplies their own contact/address details privately; the project does not invent a university affiliation or mailing address.

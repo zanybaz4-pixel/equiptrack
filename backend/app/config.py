@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     app_origin: str = "https://localhost:8443"
     brevo_api_key: SecretStr = SecretStr("")
     mail_from_email: str = ""
+    recovery_mail_provider: str = "brevo"
+    gmail_script_url: str = ""
+    gmail_relay_secret: SecretStr = SecretStr("")
     database_url: SecretStr = SecretStr(
         "postgresql+psycopg://equiptrack_app@127.0.0.1:5432/equiptrack"
     )
