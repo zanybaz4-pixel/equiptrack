@@ -57,6 +57,18 @@ Render's free web service can sleep after 15 minutes without incoming requests. 
 
 ## Verification boundary
 
+Full interface styling, November 25, 2026: a shared theme extends the raised
+button design to navigation, dashboard metrics, equipment cards, table headers,
+form fields, detail dividers, dialogs and authentication screens. Maroon text,
+warm ivory surfaces, gold accents, inset controls and shallow surface shadows
+form one palette. Semantic status colors remain distinct. The removed breadcrumb
+stays removed. No API, account, equipment or borrowing records change.
+Verification: ten frontend tests and production build pass; independent CSS
+review found no blocking issue and measured status contrast at 5.66:1-6.93:1.
+Local visual review covered admin/borrower dashboards, inventory, dialog,
+catalog/detail/request form, sign-in and the narrow/mobile navigation layout.
+Before/after dashboard captures are kept in ignored `output/ui-comparison/`.
+
 Button and header update, November 25, 2026: the top-bar breadcrumb is removed
 at the owner's request. Buttons across sign-in, recovery, forms, dialogs,
 inventory, request actions, pagination, return-view selectors and navigation
