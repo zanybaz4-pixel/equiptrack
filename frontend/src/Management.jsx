@@ -20,7 +20,7 @@ import {
 
 const SIZE = 12;
 
-function EquipmentEditor({ item, categories, session, close, completed }) {
+function EquipmentEditor({ item, session, close, completed }) {
   const mutation = useMutation();
   const [condition, setCondition] = useState(item?.condition || "good");
   const initiallyUnavailable = ["maintenance", "retired"].includes(
@@ -37,15 +37,14 @@ function EquipmentEditor({ item, categories, session, close, completed }) {
     mutation.run(async () => {
       const body = {
         name: data.get("name").trim(),
-        asset_code: data.get("asset_code").trim(),
+        storage_rack: data.get("storage_rack").trim(),
         location: data.get("location").trim(),
-        category_id: Number(data.get("category_id")),
-        description: data.get("description").trim(),
+        description: item ? data.get("description").trim() : "",
         condition,
         service_status: status,
       };
-      if (!body.name || !body.asset_code || !body.location)
-        throw new Error("Enter a name, asset code and location.");
+      if (!body.name || !body.storage_rack || !body.location)
+        throw new Error("Enter an equipment name, storage rack and location code.");
       await write(
         session,
         item ? "PUT" : "POST",
@@ -74,33 +73,16 @@ function EquipmentEditor({ item, categories, session, close, completed }) {
               />
             </label>
             <label>
-              Asset code
+              Storage Rack
               <input
-                name="asset_code"
-                defaultValue={item?.asset_code}
+                name="storage_rack"
+                defaultValue={item?.storage_rack ?? item?.asset_code}
                 required
                 maxLength={40}
               />
             </label>
             <label>
-              Category
-              <select
-                name="category_id"
-                defaultValue={item?.category_id || ""}
-                required
-              >
-                <option value="" disabled>
-                  Select a category
-                </option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Location
+              Location Code
               <input
                 name="location"
                 defaultValue={item?.location}
@@ -153,15 +135,17 @@ function EquipmentEditor({ item, categories, session, close, completed }) {
               Record the return to change the condition or service status.
             </p>
           )}
-          <label>
-            Description
-            <textarea
-              name="description"
-              defaultValue={item?.description}
-              maxLength={1000}
-              rows={3}
-            />
-          </label>
+          {item && (
+            <label>
+              Description
+              <textarea
+                name="description"
+                defaultValue={item.description}
+                maxLength={1000}
+                rows={3}
+              />
+            </label>
+          )}
         </fieldset>
         <ActionError error={mutation.error} />
         <FormActions
@@ -169,41 +153,6 @@ function EquipmentEditor({ item, categories, session, close, completed }) {
           submit={item ? "Save equipment" : "Add equipment"}
           close={close}
         />
-      </form>
-    </Dialog>
-  );
-}
-
-function CategoryEditor({ session, close, completed }) {
-  const mutation = useMutation();
-  function submit(event) {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    mutation.run(async () => {
-      const name = data.get("name").trim();
-      if (!name) throw new Error("Enter a category name.");
-      await write(session, "POST", "/categories", {
-        name,
-        description: data.get("description").trim(),
-      });
-      completed("Category added.");
-    });
-  }
-  return (
-    <Dialog title="Add category" close={close} busy={mutation.busy}>
-      <form className="work-dialog-form" onSubmit={submit}>
-        <fieldset className="work-form-fields" disabled={mutation.busy}>
-          <label>
-            Category name
-            <input name="name" required maxLength={80} />
-          </label>
-          <label>
-            Description
-            <textarea name="description" rows={3} maxLength={500} />
-          </label>
-        </fieldset>
-        <ActionError error={mutation.error} />
-        <FormActions busy={mutation.busy} submit="Add category" close={close} />
       </form>
     </Dialog>
   );
@@ -218,32 +167,21 @@ export function Inventory({ session }) {
   const items = useResource(
     endpoint("/equipment", { q, availability, offset, limit: SIZE }),
   );
-  const categories = useResource("/categories");
   function completed(message) {
     setEditor(null);
     setNotice(message);
-    if (editor.kind === "category") categories.reload();
-    else {
-      setOffset(0);
-      items.reload();
-    }
+    setOffset(0);
+    items.reload();
   }
   return (
     <>
       <PageTitle
         title="Equipment inventory"
-        description="Manage asset records, categories and service status."
+        description="Manage equipment records and service status."
       >
         <div className="work-inline">
           <button
-            className="secondary-button"
-            onClick={() => setEditor({ kind: "category" })}
-          >
-            <Plus size={16} /> Add category
-          </button>
-          <button
             className="primary-button"
-            disabled={!categories.data?.length}
             onClick={() => setEditor({ kind: "equipment" })}
           >
             <Plus size={16} /> Add equipment
@@ -255,7 +193,6 @@ export function Inventory({ session }) {
           {notice}
         </p>
       )}
-      {categories.error && <State resource={categories}>{() => null}</State>}
       <section
         className="work-panel work-section"
         aria-label="Inventory records"
@@ -269,12 +206,12 @@ export function Inventory({ session }) {
           }}
         >
           <label className="work-grow">
-            Equipment or asset code
+            Equipment name, storage rack or location code
             <input
               type="search"
               name="search"
               maxLength={120}
-              placeholder="Search inventory"
+              placeholder="e.g. Pliers, MT03 or MT03.01"
             />
           </label>
           <label>
@@ -305,7 +242,7 @@ export function Inventory({ session }) {
                     <thead>
                       <tr>
                         <th scope="col">Equipment</th>
-                        <th scope="col">Location</th>
+                        <th scope="col">Location Code</th>
                         <th scope="col">Condition</th>
                         <th scope="col">Availability</th>
                         <th scope="col">
@@ -319,10 +256,10 @@ export function Inventory({ session }) {
                           <th scope="row">
                             {item.name}
                             <span>
-                              {item.asset_code} · {item.category}
+                              {item.storage_rack ?? item.asset_code}
                             </span>
                           </th>
-                          <td data-label="Location">{item.location}</td>
+                          <td data-label="Location Code">{item.location}</td>
                           <td data-label="Condition">
                             {label(item.condition)}
                           </td>
@@ -333,7 +270,6 @@ export function Inventory({ session }) {
                             <button
                               className="text-button"
                               aria-label={`Edit ${item.name}`}
-                              disabled={!categories.data?.length}
                               onClick={() =>
                                 setEditor({ kind: "equipment", item })
                               }
@@ -348,7 +284,7 @@ export function Inventory({ session }) {
                 </div>
               ) : (
                 <p className="work-state">
-                  No equipment matches these filters.
+                  No equipment matches these filters. Try All statuses or another equipment name, rack or location code.
                 </p>
               )}
               <Pager
@@ -364,14 +300,6 @@ export function Inventory({ session }) {
       {editor?.kind === "equipment" && (
         <EquipmentEditor
           item={editor.item}
-          categories={categories.data || []}
-          session={session}
-          close={() => setEditor(null)}
-          completed={completed}
-        />
-      )}
-      {editor?.kind === "category" && (
-        <CategoryEditor
           session={session}
           close={() => setEditor(null)}
           completed={completed}

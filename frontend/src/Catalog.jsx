@@ -1,16 +1,11 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
-  Laptop,
   MapPin,
-  Microscope,
-  MonitorPlay,
-  Package,
   Search,
-  Video,
+  Wrench,
 } from "lucide-react";
-import { api } from "./api.js";
 import {
   ActionError,
   Badge,
@@ -30,23 +25,13 @@ import {
 } from "./workspace-ui.jsx";
 
 const SIZE = 12;
-const categoryIcons = {
-  Presentation: MonitorPlay,
-  Computing: Laptop,
-  "Audio & Video": Video,
-  Laboratory: Microscope,
-};
-
 export default function Catalog() {
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("");
   const [availability, setAvailability] = useState("");
   const [offset, setOffset] = useState(0);
-  const categories = useResource("/categories");
   const catalog = useResource(
     endpoint("/equipment", {
       q: query,
-      category_id: category,
       availability,
       offset,
       limit: SIZE,
@@ -63,34 +48,17 @@ export default function Catalog() {
     <>
       <PageTitle
         title="Equipment catalog"
-        description="Find school equipment and check availability for your borrowing dates."
+        description="Find department equipment and check availability for your borrowing dates."
       />
       <form className="work-filters work-panel" onSubmit={search}>
         <label className="work-grow">
-          Equipment or asset code
+          Equipment name, storage rack or location code
           <input
             name="search"
             type="search"
-            placeholder="Search the catalog"
+            placeholder="e.g. Pliers, MT03 or MT03.01"
             maxLength={120}
           />
-        </label>
-        <label>
-          Category
-          <select
-            value={category}
-            onChange={(event) => {
-              setCategory(event.target.value);
-              setOffset(0);
-            }}
-          >
-            <option value="">All categories</option>
-            {categories.data?.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </select>
         </label>
         <label>
           Availability
@@ -113,20 +81,14 @@ export default function Catalog() {
           <Search size={16} /> Search
         </button>
       </form>
-      {categories.error && (
-        <p className="work-error" role="alert">
-          Categories could not load.
-          <button className="text-button" onClick={categories.reload}>
-            Retry categories
-          </button>
-        </p>
-      )}
       <State
         resource={catalog}
         empty={
           catalog.data?.items.length === 0 &&
           !offset &&
-          "No equipment matches these filters."
+          (availability
+            ? "No equipment matches these filters. Try All statuses or another equipment name, rack or location code."
+            : "No equipment matches this search. Try an equipment name, rack or location code.")
         }
       >
         {(page) => (
@@ -136,16 +98,15 @@ export default function Catalog() {
             </p>
             <div className="work-catalog-grid">
               {page.items.map((item) => {
-                const Icon = categoryIcons[item.category] || Package;
                 return (
                   <article className="work-equipment" key={item.id}>
                     <div className="work-equipment-image">
-                      <Icon size={43} strokeWidth={1.5} aria-hidden="true" />
+                      <Wrench size={43} strokeWidth={1.5} aria-hidden="true" />
                       <Badge value={item.availability} />
                     </div>
                     <div className="work-equipment-body">
                       <p className="work-muted">
-                        {item.asset_code} · {item.category}
+                        {item.storage_rack ?? item.asset_code}
                       </p>
                       <h2>
                         <a href={`#/equipment/${item.id}`}>{item.name}</a>
@@ -195,9 +156,8 @@ export function EquipmentDetails({ id, session }) {
           <section className="work-panel work-detail">
             <Fields
               entries={[
-                ["Asset code", data.asset_code],
-                ["Category", data.category],
-                ["Location", data.location],
+                ["Storage Rack", data.storage_rack ?? data.asset_code],
+                ["Location Code", data.location],
                 ["Condition", label(data.condition)],
                 ["Current availability", <Badge value={data.availability} />],
               ]}
@@ -225,34 +185,56 @@ export function EquipmentDetails({ id, session }) {
 }
 
 function BorrowForm({ item, session }) {
-  const form = useRef(null);
-  const [availability, setAvailability] = useState(null);
+  const [dates, setDates] = useState({ borrow_at: "", due_at: "" });
+  const [submittedDates, setSubmittedDates] = useState(null);
   const [earliest] = useState(() => manilaInput(new Date()));
-  const checking = useMutation();
   const submission = useMutation();
-  const busy = checking.busy || submission.busy;
+  const busy = submission.busy;
   const blocked = ["maintenance", "retired"].includes(item.availability);
+  const dateKey = `${dates.borrow_at}/${dates.due_at}`;
+  let period = null;
+  let dateError = "";
+  if (dates.borrow_at && dates.due_at) {
+    try {
+      period = periodValues({ get: (name) => dates[name] });
+    } catch (failure) {
+      dateError = failure.message;
+    }
+  }
+  const availability = useResource(period ? endpoint(`/equipment/${item.id}`, period) : null);
+  const available = Boolean(period && availability.data?.availability === "available");
+  const unavailable = Boolean(period && availability.data && !available);
 
-  function check() {
-    checking.run(async () => {
-      const period = periodValues(new FormData(form.current));
-      const result = await api(endpoint(`/equipment/${item.id}`, period));
-      setAvailability(result.availability);
-    });
+  function changeDate(event) {
+    const { name, value } = event.target;
+    setDates((current) => ({ ...current, [name]: value }));
+    setSubmittedDates(null);
   }
   function submit(event) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    setSubmittedDates(dateKey);
     submission.run(async () => {
+      if (!available)
+        throw new Error("Choose available borrowing and return dates before submitting.");
       const purpose = data.get("purpose").trim();
       if (purpose.length < 5)
         throw new Error("Enter a purpose of at least five characters.");
       const period = periodValues(data);
-      const result = await write(session, "POST", "/requests", {
-        ...period,
-        purpose,
-        equipment_id: item.id,
-      });
+      let result;
+      try {
+        result = await write(session, "POST", "/requests", {
+          ...period,
+          purpose,
+          equipment_id: item.id,
+        });
+      } catch (failure) {
+        if (failure.status === 409) {
+          availability.reload();
+          throw new Error("This equipment is no longer available for those dates. Choose another time or another item.");
+        }
+        throw failure;
+      }
       window.location.hash = `/requests/${result.id}`;
     });
   }
@@ -267,27 +249,25 @@ function BorrowForm({ item, session }) {
 
   return (
     <form
-      ref={form}
       className="work-panel work-form"
       onSubmit={submit}
       aria-describedby="request-privacy"
     >
       <p className="work-form-intro">
-        {item.asset_code} · {item.name}
+        {item.storage_rack ?? item.asset_code} · {item.name}
       </p>
       <fieldset disabled={busy} className="work-form-fields">
         <p className="work-muted">
           Enter the borrowing and return times in Philippine time (UTC+08:00).
         </p>
-        <div
-          className="work-form-columns"
-          onChange={() => setAvailability(null)}
-        >
+        <div className="work-form-columns">
           <label>
             Borrow from
             <input
               type="datetime-local"
               name="borrow_at"
+              value={dates.borrow_at}
+              onChange={changeDate}
               required
               min={earliest}
             />
@@ -297,22 +277,32 @@ function BorrowForm({ item, session }) {
             <input
               type="datetime-local"
               name="due_at"
+              value={dates.due_at}
+              onChange={changeDate}
               required
               min={earliest}
             />
           </label>
         </div>
-        <div className="work-inline">
-          <button className="secondary-button" type="button" onClick={check}>
-            {checking.busy ? "Checking…" : "Check dates"}
-          </button>
-          {availability && (
-            <span role="status">
-              <Badge value={availability} /> for these dates
-            </span>
-          )}
-        </div>
-        <ActionError error={!availability && checking.error} />
+        {!period && !dateError && (
+          <p className="work-muted">Choose both dates. Availability is checked automatically.</p>
+        )}
+        {availability.loading && <p className="work-muted" role="status">Checking availability for these dates…</p>}
+        {(available || unavailable) && (
+          <div className={`work-availability-note ${available ? "is-available" : "is-unavailable"}`} role="status">
+            <strong>{available ? "Available for your selected dates" : "Unavailable for your selected dates"}</strong>
+            <p>{available
+              ? "You can submit this request for the custodian to review."
+              : availability.data.availability === "reserved"
+                ? "This equipment already has a reservation during that time. Change the borrowing or return time, or choose another item."
+                : "This equipment is checked out or unavailable during that time. Change your dates or choose another item."}</p>
+            {unavailable && <a className="text-button" href="#/equipment">Choose another item</a>}
+          </div>
+        )}
+        <ActionError error={dateError || availability.error?.message} />
+        {period && availability.error && (
+          <button className="secondary-button" type="button" onClick={availability.reload}>Retry availability check</button>
+        )}
         <label>
           Purpose
           <textarea
@@ -329,7 +319,7 @@ function BorrowForm({ item, session }) {
           details and keep personal information out of the purpose.
         </p>
       </fieldset>
-      <ActionError error={submission.error} />
+      <ActionError error={submittedDates === dateKey && submission.error} />
       <div className="work-actions">
         <a className="secondary-button" href={`#/equipment/${item.id}`}>
           Back
@@ -337,7 +327,7 @@ function BorrowForm({ item, session }) {
         <button
           className="primary-button"
           disabled={
-            busy || Boolean(availability && availability !== "available")
+            busy || !available
           }
         >
           {submission.busy ? "Submitting…" : "Submit request"}

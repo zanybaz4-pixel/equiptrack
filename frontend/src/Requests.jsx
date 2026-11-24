@@ -1,4 +1,5 @@
 import { useState } from "react";
+import DepartmentLogo, { DEPARTMENT_NAME } from "./DepartmentLogo.jsx";
 import {
   ArrowLeft,
   ArrowRight,
@@ -66,7 +67,7 @@ const metricItems = [
   },
 ];
 
-export function RequestTable({ items, admin }) {
+export function RequestTable({ items, admin, completedReturns = false }) {
   return (
     <div className="work-table-wrap">
       <table className="work-table">
@@ -74,7 +75,8 @@ export function RequestTable({ items, admin }) {
           <tr>
             <th scope="col">Equipment</th>
             {admin && <th scope="col">Borrower</th>}
-            <th scope="col">Return by</th>
+            <th scope="col">{completedReturns ? "Returned on" : "Return by"}</th>
+            {completedReturns && <th scope="col">Return condition</th>}
             <th scope="col">Status</th>
             <th scope="col">
               <span className="sr-only">Actions</span>
@@ -92,7 +94,7 @@ export function RequestTable({ items, admin }) {
                   <span className="request-equipment-name">
                     {row.equipment_name}
                     <small>
-                      #{row.id} · {row.asset_code}
+                      #{row.id} · {row.storage_rack ?? row.asset_code}
                     </small>
                   </span>
                 </a>
@@ -102,9 +104,12 @@ export function RequestTable({ items, admin }) {
                   {row.borrower_name || `#${row.borrower_id}`}
                 </td>
               )}
-              <td data-label="Return by">
-                <time dateTime={row.due_at}>{displayDate(row.due_at)}</time>
+              <td data-label={completedReturns ? "Returned on" : "Return by"}>
+                <time dateTime={completedReturns ? row.loan?.returned_at : row.due_at}>
+                  {displayDate(completedReturns ? row.loan?.returned_at : row.due_at)}
+                </time>
               </td>
+              {completedReturns && <td data-label="Return condition">{label(row.loan?.return_condition)}</td>}
               <td data-label="Status">
                 <RequestBadge row={row} />
               </td>
@@ -134,7 +139,7 @@ export function Dashboard({ session }) {
     ? [
         {
           title: "Equipment inventory",
-          description: "Assets, categories and availability",
+          description: "Equipment records and availability",
           path: "/admin/inventory",
           Icon: Layers,
         },
@@ -183,7 +188,7 @@ export function Dashboard({ session }) {
           </h1>
           <p>
             {admin
-              ? "A clear view of requests, campus equipment and every handover."
+              ? "A clear view of requests, department equipment and every handover."
               : "Your requests, upcoming pickups and equipment returns, together."}
           </p>
           <div className="dashboard-intro-actions">
@@ -208,9 +213,9 @@ export function Dashboard({ session }) {
           </div>
         </div>
         <div className="dashboard-campus-card">
-          <img src="/images/bu-seal.png" alt="" width="49" height="49" />
+          <DepartmentLogo width={86} height={86} decorative />
           <div>
-            <strong>Bicol University</strong>
+            <strong>{DEPARTMENT_NAME}</strong>
             <span>Equipment borrowing workspace</span>
           </div>
         </div>
@@ -363,8 +368,7 @@ const views = {
   },
   returns: {
     title: "Record returns",
-    description: "Inspect returned equipment and record its condition.",
-    custody: "active",
+    description: "View completed returns or record the return of equipment still on loan.",
   },
   active: {
     title: "Active loans",
@@ -386,13 +390,14 @@ const views = {
 export function RequestList({ view, session }) {
   const config = views[view];
   const [status, setStatus] = useState(view === "history" ? "returned" : "");
+  const [returnView, setReturnView] = useState("completed");
   const [query, setQuery] = useState("");
   const [offset, setOffset] = useState(0);
   const rows = useResource(
     endpoint("/requests", {
       q: query,
-      status: config.status || status,
-      custody: config.custody,
+      status: view === "returns" ? (returnView === "completed" ? "returned" : "") : config.status || status,
+      custody: view === "returns" ? (returnView === "awaiting" ? "active" : undefined) : config.custody,
       offset,
       limit: SIZE + 1,
     }),
@@ -407,14 +412,28 @@ export function RequestList({ view, session }) {
   return (
     <>
       <PageTitle title={config.title} description={config.description} />
+      {view === "returns" && (
+        <div className="work-return-switch" role="group" aria-label="Return records">
+          {[["completed", "Completed returns"], ["awaiting", "Awaiting return"]].map(([value, title]) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={returnView === value}
+              onClick={() => { setReturnView(value); setOffset(0); }}
+            >
+              {title}
+            </button>
+          ))}
+        </div>
+      )}
       <section className="work-panel work-section" aria-label={config.title}>
         <form className="work-filters work-panel-filters" onSubmit={search}>
           <label className="work-grow">
-            Equipment or asset code
+            Equipment name, storage rack or location code
             <input
               name="search"
               type="search"
-              placeholder="Search requests"
+              placeholder="e.g. Pliers, MT03 or MT03.01"
               maxLength={120}
             />
           </label>
@@ -444,9 +463,13 @@ export function RequestList({ view, session }) {
           {(items) => (
             <>
               {items.length ? (
-                <RequestTable items={items.slice(0, SIZE)} admin={admin} />
+                <RequestTable items={items.slice(0, SIZE)} admin={admin} completedReturns={view === "returns" && returnView === "completed"} />
               ) : (
-                <p className="work-state">No requests match this view.</p>
+                <p className="work-state">{view === "returns"
+                  ? returnView === "completed"
+                    ? "No completed returns match this search. Recorded returns will appear here."
+                    : "No equipment is awaiting return. Completed records are in Completed returns."
+                  : "No requests match this view."}</p>
               )}
               <Pager
                 offset={offset}
@@ -508,10 +531,15 @@ const actions = {
 function RequestAction({ type, row, session, close, completed }) {
   const mutation = useMutation();
   const action = actions[type];
+  const availability = useResource(type === "approve"
+    ? endpoint(`/equipment/${row.equipment_id}`, { borrow_at: row.borrow_at, due_at: row.due_at })
+    : null);
+  const approvalBlocked = type === "approve" && availability.data?.availability !== "available";
   function submit(event) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     mutation.run(async () => {
+      if (approvalBlocked) throw new Error("The equipment must be available for these dates before approval.");
       const remarks = data.get("remarks")?.trim() || undefined;
       let body;
       if (type === "approve" || type === "reject")
@@ -521,12 +549,17 @@ function RequestAction({ type, row, session, close, completed }) {
         };
       if (type === "release" || type === "return")
         body = { condition: data.get("condition"), remarks };
-      await write(
-        session,
-        action.method,
-        `/requests/${row.id}${action.suffix}`,
-        body,
-      );
+      try {
+        await write(
+          session,
+          action.method,
+          `/requests/${row.id}${action.suffix}`,
+          body,
+        );
+      } catch (failure) {
+        if (type === "approve" && failure.status === 409) availability.reload();
+        throw failure;
+      }
       completed(action.success);
     });
   }
@@ -534,6 +567,23 @@ function RequestAction({ type, row, session, close, completed }) {
     <Dialog title={action.title} busy={mutation.busy} close={close}>
       <form className="work-dialog-form" onSubmit={submit}>
         <p>{action.copy}</p>
+        {type === "approve" && (
+          <>
+            <Fields entries={[["Borrow from", displayDate(row.borrow_at)], ["Return by", displayDate(row.due_at)]]} />
+            {availability.loading && <p role="status">Checking equipment availability…</p>}
+            <ActionError error={availability.error?.message} />
+            {availability.error && <button className="secondary-button" type="button" onClick={availability.reload}>Retry availability check</button>}
+            {availability.data && approvalBlocked && (
+              <div className="work-availability-note is-unavailable" role="status">
+                <strong>This request cannot be approved for these dates</strong>
+                <p>{availability.data.availability === "reserved"
+                  ? "The equipment already has a reservation during this period. The borrower needs different dates, or the existing reservation must be reviewed."
+                  : "The equipment is checked out or unavailable during this period. Review its custody and service status before approving."}</p>
+                <a className="text-button" href="#/admin/history" onClick={close}>Review existing requests</a>
+              </div>
+            )}
+          </>
+        )}
         <fieldset className="work-form-fields" disabled={mutation.busy}>
           {(type === "release" || type === "return") && (
             <label>
@@ -567,6 +617,7 @@ function RequestAction({ type, row, session, close, completed }) {
         <ActionError error={mutation.error} />
         <FormActions
           busy={mutation.busy}
+          disabled={approvalBlocked}
           submit={action.verb}
           close={close}
           danger={type === "cancel" || type === "reject"}
@@ -590,7 +641,7 @@ export function RequestDetails({ id, session }) {
       </a>
       <PageTitle
         title={row?.equipment_name || `Request #${id}`}
-        description={row ? `Request #${id} · ${row.asset_code}` : undefined}
+        description={row ? `Request #${id} · ${row.storage_rack ?? row.asset_code}` : undefined}
       >
         {row && <RequestBadge row={row} />}
       </PageTitle>

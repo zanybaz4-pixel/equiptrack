@@ -14,11 +14,12 @@ class CategoryOut(BaseModel):
 class EquipmentOut(BaseModel):
     id: int
     asset_code: str
+    storage_rack: str | None = None
     name: str
     description: str
     location: str
-    category_id: int
-    category: str
+    category_id: int | None
+    category: str | None
     condition: str
     availability: Availability
 

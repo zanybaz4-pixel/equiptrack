@@ -277,7 +277,7 @@ export function ActionError({ error }) {
   );
 }
 
-export function FormActions({ busy, submit, close, danger = false }) {
+export function FormActions({ busy, submit, close, danger = false, disabled = false }) {
   return (
     <div className="work-actions">
       {close && (
@@ -292,7 +292,7 @@ export function FormActions({ busy, submit, close, danger = false }) {
       )}
       <button
         className={danger ? "danger-button" : "primary-button"}
-        disabled={busy}
+        disabled={busy || disabled}
       >
         {busy ? "Saving…" : submit}
       </button>

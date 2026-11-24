@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, KeyRound, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 import { api } from "./api.js";
+import DepartmentLogo, { DEPARTMENT_NAME } from "./DepartmentLogo.jsx";
 
 function tokenFromLink() {
   return new URLSearchParams(window.location.hash.split("?")[1] || "").get("token") || "";
@@ -61,9 +62,9 @@ export default function PasswordRecovery({ mode, completed }) {
       <div className="login-layout">
         <section className="login-card recovery-card" aria-labelledby="recovery-title">
           <div className="login-seal-wrap">
-            <img className="login-seal" src="/images/bu-seal.png" width="104" height="104" alt="Bicol University seal" />
+            <DepartmentLogo className="login-seal" width={120} height={120} />
           </div>
-          <p className="login-university">EquipTrack account recovery</p>
+          <p className="login-department">{DEPARTMENT_NAME}</p>
           <h1 id="recovery-title" tabIndex={-1} ref={heading}>
             {done ? (reset ? "Password updated" : "Check your inbox") : (reset ? "Choose a new password" : "Forgot your password?")}
           </h1>

@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 from typing import Annotated, Literal
 
+from fastapi import Query
 from pydantic import (
     AfterValidator, AwareDatetime, BaseModel, BeforeValidator, ConfigDict, Field,
     StringConstraints, field_validator, model_validator,
@@ -41,17 +42,24 @@ def validate_email(value: str) -> str:
 Email = Annotated[str, StringConstraints(max_length=254), AfterValidator(validate_email)]
 
 
+def valid_database_text(value):
+    if isinstance(value, str):
+        if "\x00" in value:
+            raise ValueError("Null characters are not supported.")
+        value.encode("utf-8")
+    return value
+
+
+SearchText = Annotated[str, Query(max_length=120, pattern=r"^[^\x00]*$")]
+
+
 class Input(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     @field_validator("*", mode="before")
     @classmethod
     def valid_database_text(cls, value):
-        if isinstance(value, str):
-            if "\x00" in value:
-                raise ValueError("Null characters are not supported.")
-            value.encode("utf-8")
-        return value
+        return valid_database_text(value)
 
 
 class LoginIn(Input):
@@ -114,8 +122,9 @@ class CategoryIn(Input):
 
 
 class EquipmentIn(Input):
-    category_id: PositiveId
-    asset_code: Annotated[str, StringConstraints(strip_whitespace=True, to_upper=True, min_length=1, max_length=40)]
+    category_id: PositiveId | None = None
+    asset_code: Annotated[str, StringConstraints(strip_whitespace=True, to_upper=True, min_length=1, max_length=40)] | None = None
+    storage_rack: Annotated[str, StringConstraints(strip_whitespace=True, to_upper=True, min_length=1, max_length=40)] | None = None
     name: Name
     location: Name
     description: Annotated[str, StringConstraints(strip_whitespace=True, max_length=1000)] = ""
@@ -124,6 +133,8 @@ class EquipmentIn(Input):
 
     @model_validator(mode="after")
     def check_damage(self):
+        if self.asset_code is None and self.storage_rack is None:
+            raise ValueError("Enter a storage rack.")
         if self.condition == "damaged" and self.service_status == "serviceable":
             raise ValueError("Damaged equipment cannot be marked serviceable.")
         return self
@@ -185,6 +196,7 @@ class RequestOut(BaseModel):
     created_at: datetime
     equipment_name: str
     asset_code: str
+    storage_rack: str | None = None
     equipment_state: ServiceStatus
     loan: LoanOut | None
     is_overdue: bool

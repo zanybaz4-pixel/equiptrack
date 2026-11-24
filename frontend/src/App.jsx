@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   ArrowDownToLine,
   ArrowUpFromLine,
-  ChevronRight,
   ClipboardCheck,
   ClipboardList,
   Clock3,
@@ -21,6 +20,7 @@ import Catalog, { BorrowRequest, EquipmentDetails } from "./Catalog.jsx";
 import { Accounts, AuditTrail, Inventory, Profile } from "./Management.jsx";
 import { Dashboard, RequestDetails, RequestList } from "./Requests.jsx";
 import { Dialog, PageTitle } from "./workspace-ui.jsx";
+import DepartmentLogo, { DEPARTMENT_NAME } from "./DepartmentLogo.jsx";
 
 const borrowerNav = [
   ["/", "Dashboard", LayoutDashboard],
@@ -54,7 +54,7 @@ function navMatches(path, route) {
 
 function Navigation({ items, path, close, grouped = false }) {
   return (
-    <nav className="work-nav" aria-label="Workspace">
+    <nav className="work-nav" aria-label="Department navigation">
       {items.map(([route, title, Icon], index) => (
         <div key={route}>
           {grouped &&
@@ -63,7 +63,7 @@ function Navigation({ items, path, close, grouped = false }) {
               route === "/profile") && (
               <p className="work-nav-group">
                 {index === 0
-                  ? "Workspace"
+                  ? "Department"
                   : route === "/profile"
                     ? "Account"
                     : "Management"}
@@ -178,7 +178,6 @@ export default function App({
   const admin = session.user.role === "admin";
   const items = admin ? adminNav : borrowerNav;
   const role = admin ? "Custodian" : "Borrower";
-  const section = items.find(([route]) => navMatches(path, route))?.[1];
   const initials = session.user.full_name
     .trim()
     .split(/\s+/)
@@ -221,15 +220,10 @@ export default function App({
       </a>
       <aside className="work-sidebar">
         <a className="work-brand" href="#/">
-          <img
-            src="/images/bu-seal.png"
-            alt="Bicol University seal"
-            width="46"
-            height="46"
-          />
+          <DepartmentLogo width={64} height={64} />
           <span className="work-brand-name">
             Equip<span>Track</span>
-            <small>Bicol University</small>
+            <small>{DEPARTMENT_NAME}</small>
           </span>
         </a>
         <Navigation items={items} path={path} grouped />
@@ -259,11 +253,6 @@ export default function App({
             >
               <Menu size={22} />
             </button>
-            <span className="work-topbar-context">
-              <span>Workspace</span>
-              <ChevronRight size={13} aria-hidden="true" />
-              <strong>{section || `${role} workspace`}</strong>
-            </span>
           </div>
           <div className="work-topbar-account">
             <time className="work-today" dateTime={new Date().toISOString()}>

@@ -6,7 +6,7 @@ from sqlalchemy import literal, or_, select
 from sqlalchemy.orm import Session
 
 from app.db import DB
-from app.lending_schemas import DecisionIn, LoanOut, ReleaseIn, RequestCreate, RequestOut, RequestStatus, ReturnIn
+from app.lending_schemas import DecisionIn, LoanOut, ReleaseIn, RequestCreate, RequestOut, RequestStatus, ReturnIn, SearchText
 from app.models import BorrowingRequest, EquipmentItem, LoanRecord, User
 from app.schemas import errors
 from app.security import AdminWriter, BorrowerWriter, Current
@@ -42,7 +42,7 @@ def check_reservation(db: Session, item: EquipmentItem, start: datetime, end: da
         BorrowingRequest.borrow_at < end, BorrowingRequest.due_at > start,
     ).limit(1))
     if overlap is not None:
-        raise HTTPException(409, "The requested period overlaps an existing reservation.")
+        raise HTTPException(409, "This equipment is already reserved for these dates. Choose another time or another item.")
     loan = active_loan(db, item.id)
     if loan is not None:
         due = db.scalar(select(BorrowingRequest.due_at).where(BorrowingRequest.id == loan.request_id))
@@ -67,6 +67,7 @@ def serialize_request(row: BorrowingRequest, item: EquipmentItem, loan: LoanReco
         decided_by=row.decided_by, decided_at=row.decided_at, decision_remarks=row.decision_remarks,
         canceled_at=row.canceled_at, created_at=row.created_at, equipment_name=item.name,
         asset_code=item.asset_code, equipment_state=item.service_status,
+        storage_rack=item.storage_rack or item.asset_code,
         loan=LoanOut.model_validate(loan) if loan is not None else None,
         is_overdue=bool(loan and loan.returned_at is None and now > row.due_at),
         was_returned_late=bool(loan and loan.returned_at and loan.returned_at > row.due_at),
@@ -103,7 +104,7 @@ def save_request(db: Session, actor: User, row: BorrowingRequest, item: Equipmen
 
 @router.get("", response_model=list[RequestOut], responses=errors(401, 422, 500, 503))
 def list_requests(db: DB, principal: Current, status: RequestStatus | None = None,
-                  custody: Literal["active", "overdue"] | None = None, q: str = Query("", max_length=120),
+                  custody: Literal["active", "overdue"] | None = None, q: SearchText = "",
                   offset: int = Query(0, ge=0, le=100000), limit: int = Query(25, ge=1, le=100)):
     now = datetime.now(UTC)
     statement = visible_requests(principal.user)
@@ -115,7 +116,9 @@ def list_requests(db: DB, principal: Current, status: RequestStatus | None = Non
         statement = statement.where(BorrowingRequest.due_at < now)
     if q.strip():
         statement = statement.where(or_(EquipmentItem.name.icontains(q.strip(), autoescape=True),
-                                        EquipmentItem.asset_code.icontains(q.strip(), autoescape=True)))
+                                        EquipmentItem.asset_code.icontains(q.strip(), autoescape=True),
+                                        EquipmentItem.storage_rack.icontains(q.strip(), autoescape=True),
+                                        EquipmentItem.location.icontains(q.strip(), autoescape=True)))
     statement = statement.order_by(BorrowingRequest.created_at.desc(), BorrowingRequest.id.desc()).offset(offset).limit(limit)
     return [serialize_request(row, item, loan, now, borrower_name)
             for row, item, loan, borrower_name in db.execute(statement)]

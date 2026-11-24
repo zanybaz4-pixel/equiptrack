@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import SessionGate from "./SessionGate.jsx";
 import "./styles.css";
 import "./workspace.css";
+import "./buttons.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>

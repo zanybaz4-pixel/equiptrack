@@ -12,7 +12,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.catalog import catalog_query, list_equipment
 from app import administration, auth, lending, recovery
 from app.db import DB
-from app.lending_schemas import BookingTimestamp
+from app.lending_schemas import BookingTimestamp, SearchText
 from app.models import Category, EquipmentItem
 from app.schemas import Availability, CategoryOut, EquipmentOut, EquipmentPage, errors
 from app.security import Current
@@ -115,7 +115,7 @@ Period = Annotated[tuple, Depends(booking_period)]
 
 @app.get("/api/equipment", response_model=EquipmentPage, tags=["availability"],
          responses=errors(401, 422, 500, 503))
-def equipment(db: DB, principal: Current, period: Period, q: str = Query("", max_length=120),
+def equipment(db: DB, principal: Current, period: Period, q: SearchText = "",
               category_id: int | None = Query(None, gt=0, le=2**63 - 1),
               availability: Availability | None = None,
               offset: int = Query(0, ge=0, le=100000), limit: int = Query(12, ge=1, le=100)):

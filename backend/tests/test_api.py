@@ -14,6 +14,7 @@ ITEM = {
     "id": 1, "asset_code": "ET-TEST-001", "name": "Synthetic projector",
     "description": "Synthetic test item", "location": "Test cabinet", "category_id": 1,
     "category": "Presentation", "condition": "good", "availability": "available",
+    "storage_rack": "ET-TEST-001",
 }
 
 
@@ -118,6 +119,14 @@ def test_search_input_is_bound_as_data(client, db):
     compiled = statement.compile()
     assert attack not in str(compiled)
     assert attack in compiled.params.values()
+
+
+@pytest.mark.parametrize("path", ["/api/equipment", "/api/requests"])
+def test_search_rejects_null_characters_before_querying(client, db, path):
+    response = client.get(path, params={"q": "tool\x00"})
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "validation_error"
+    db.execute.assert_not_called()
 
 
 def test_unknown_route_uses_error_envelope(client):

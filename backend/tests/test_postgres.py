@@ -37,6 +37,9 @@ def pg():
             pytest.fail("Integration database must have an empty public schema.")
         sql = (Path(__file__).parents[1] / "migrations/versions/0001_initial.sql").read_text(encoding="utf-8")
         connection.exec_driver_sql(sql)
+        # Additive metadata used by the current ORM; the original constraints
+        # remain under test in this rolled-back schema.
+        connection.exec_driver_sql("ALTER TABLE equipment_items ADD COLUMN storage_rack varchar(40), ADD COLUMN directory_key varchar(64)")
         connection.execute(text("""INSERT INTO users (email, full_name, password_hash, role, borrower_type)
             VALUES ('borrower@example.invalid', 'Synthetic Borrower', 'not-a-login-hash', 'borrower', 'student'),
                    ('admin@example.invalid', 'Synthetic Custodian', 'not-a-login-hash', 'admin', NULL);

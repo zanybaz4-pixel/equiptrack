@@ -54,7 +54,7 @@ services:
     depends_on:
       migrate: { condition: service_completed_successfully }
     expose: ["8000"]
-    networks: [application, data]
+    networks: [application, data, mail_egress]
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health/ready', timeout=5)"]
       interval: 15s
@@ -85,6 +85,8 @@ volumes:
   postgres_data:
 
 networks:
+  # Outbound HTTPS for the configured recovery provider; no published API port.
+  mail_egress:
   presentation:
   application:
     internal: true

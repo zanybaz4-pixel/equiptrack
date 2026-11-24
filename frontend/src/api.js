@@ -15,7 +15,19 @@ export async function api(path, signal, options = {}) {
         : "Unable to connect to EquipTrack. Please try again.",
     );
   }
-  const body = await response.json().catch(() => null);
+  let body;
+  try {
+    body = await response.json();
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    if (response.ok) {
+      throw new Error(
+        error.name === "TimeoutError" || error.name === "AbortError"
+          ? "The connection took too long. Please try again."
+          : "Unable to read the response. Please try again.",
+      );
+    }
+  }
   if (!response.ok) {
     const error = new Error(
       body?.error?.message || "Unable to connect. Please try again.",

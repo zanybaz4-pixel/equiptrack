@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import App from "./App.jsx";
 import { api } from "./api.js";
 import PasswordRecovery from "./PasswordRecovery.jsx";
+import DepartmentLogo, { DEPARTMENT_NAME } from "./DepartmentLogo.jsx";
 import { Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 
 export default function SessionGate() {
@@ -18,6 +19,10 @@ export default function SessionGate() {
     window.addEventListener("hashchange", changed);
     return () => window.removeEventListener("hashchange", changed);
   }, []);
+
+  useEffect(() => {
+    if (session && authPath === "#/login") window.location.replace("#/");
+  }, [session, authPath]);
 
   useEffect(() => {
     function expire() {
@@ -77,8 +82,12 @@ export default function SessionGate() {
         headers: { "X-CSRF-Token": session.csrf_token },
       });
       setSession(null);
+      window.location.replace("#/login");
     } catch (failure) {
-      if (failure.status === 401) setSession(null);
+      if (failure.status === 401) {
+        setSession(null);
+        window.location.replace("#/login");
+      }
       else setError(failure.message);
     } finally {
       setBusy(false);
@@ -88,7 +97,7 @@ export default function SessionGate() {
   if (authPath === "#/forgot-password" || authPath === "#/reset-password") {
     return <PasswordRecovery key={authLocation} mode={authPath === "#/reset-password" ? "reset" : "request"} completed={() => setSession(null)} />;
   }
-  if (loading)
+  if (loading || (session && authPath === "#/login"))
     return (
       <main className="grid min-h-screen place-items-center" role="status">
         Checking your session…
@@ -113,18 +122,12 @@ export default function SessionGate() {
       <div className="login-layout">
         <section className="login-card" aria-labelledby="sign-in-title">
           <div className="login-seal-wrap">
-            <img
-              className="login-seal"
-              src="/images/bu-seal.png"
-              width="104"
-              height="104"
-              alt="Bicol University seal"
-            />
+            <DepartmentLogo className="login-seal" width={120} height={120} />
           </div>
-          <p className="login-university">Bicol University</p>
+          <p className="login-department">{DEPARTMENT_NAME}</p>
           <h1 id="sign-in-title">Sign in to EquipTrack</h1>
           <p className="login-description">
-            Your campus resources, in one shared workspace.
+            Your department’s equipment, in one shared workspace.
           </p>
           <form
             onSubmit={signIn}

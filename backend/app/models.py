@@ -53,8 +53,10 @@ class Category(Base):
 class EquipmentItem(Base):
     __tablename__ = "equipment_items"
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
-    category_id: Mapped[int] = mapped_column(ForeignKey("equipment_categories.id"))
+    category_id: Mapped[int | None] = mapped_column(ForeignKey("equipment_categories.id"))
     asset_code: Mapped[str] = mapped_column(String(40), unique=True)
+    storage_rack: Mapped[str | None] = mapped_column(String(40))
+    directory_key: Mapped[str | None] = mapped_column(String(64), unique=True)
     name: Mapped[str] = mapped_column(String(120))
     description: Mapped[str] = mapped_column(Text)
     location: Mapped[str] = mapped_column(String(120))

@@ -4,7 +4,7 @@ The sign-in page includes **Forgot password?**. Recovery uses a single-use email
 
 ## Delivery setup
 
-The user chose the [Gmail delivery alternative](GMAIL_DELIVERY.md) after Brevo's phone-verification step could not be completed. That provider uses signed HTTPS requests and Google's send-email permission. The Brevo instructions below remain an optional alternative. Real inbox delivery is pending until the chosen provider is authorized and configured.
+The user chose the [Gmail delivery alternative](GMAIL_DELIVERY.md) after Brevo's phone-verification step could not be completed. That provider uses signed HTTPS requests and Google's send-email permission. The Google web app and private Render settings are deployed. Actual reset-email delivery to the owner's Gmail inbox, successful reset submission with an owner-entered password, and subsequent authenticated sign-in were verified on November 24, 2026. The Brevo instructions below remain an optional alternative.
 
 The implementation uses Brevo's HTTPS transactional email API. Render's free web services block outbound SMTP ports 25, 465 and 587, so a Gmail SMTP password is not the delivery configuration for this deployment.
 
@@ -29,6 +29,6 @@ Until delivery is configured, the request endpoint returns a clear 503 message d
 
 On November 24, 2026, 44 non-database API/configuration/recovery checks and 14 isolated PostgreSQL workflow checks passed. The PostgreSQL checks include concurrent reset-link use, token expiry and session invalidation using the restricted application role. Email delivery was intercepted for these tests; no real mailbox or existing account password was changed. The test migration owner received `pg_read_all_stats` only inside the disposable database to observe the existing concurrency tests; no production role was granted that permission.
 
-Automated checks use fictional accounts and intercepted email delivery. They cover token hashing, expiry, replay/concurrent consumption, account/session isolation, request cooldown/quotas, invalid input and Origin rejection. Live inbox delivery and the owner-entered new-password flow require the configured Brevo sender and an authorized controlled mailbox; they must be reported separately from automated tests.
+Automated checks use fictional accounts and intercepted email delivery. They cover token hashing, expiry, replay/concurrent consumption, account/session isolation, request cooldown/quotas, invalid input and Origin rejection. Live inbox delivery and the owner-entered new-password flow require the configured delivery provider and an active EquipTrack account using an authorized controlled mailbox; they must be reported separately from automated tests.
 
 References: [Brevo transactional email API](https://developers.brevo.com/docs/send-a-transactional-email), [Render free-service restrictions](https://render.com/docs/free), [OWASP password recovery guidance](https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html).
