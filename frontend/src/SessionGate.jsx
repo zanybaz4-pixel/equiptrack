@@ -20,6 +20,10 @@ export default function SessionGate() {
   }, []);
 
   useEffect(() => {
+    if (session && authPath === "#/login") window.location.replace("#/");
+  }, [session, authPath]);
+
+  useEffect(() => {
     function expire() {
       setSession(null);
       setError("Your session ended. Sign in again to continue.");
@@ -88,7 +92,7 @@ export default function SessionGate() {
   if (authPath === "#/forgot-password" || authPath === "#/reset-password") {
     return <PasswordRecovery key={authLocation} mode={authPath === "#/reset-password" ? "reset" : "request"} completed={() => setSession(null)} />;
   }
-  if (loading)
+  if (loading || (session && authPath === "#/login"))
     return (
       <main className="grid min-h-screen place-items-center" role="status">
         Checking your session…
