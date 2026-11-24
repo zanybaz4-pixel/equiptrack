@@ -42,7 +42,7 @@ def catalog_query(now: datetime | None = None, start: datetime | None = None, en
         EquipmentItem.description, EquipmentItem.location, EquipmentItem.category_id,
         Category.name.label("category"), EquipmentItem.condition,
         availability_expression(now or datetime.now(timezone.utc), start, end),
-    ).join(Category, Category.id == EquipmentItem.category_id)
+    ).outerjoin(Category, Category.id == EquipmentItem.category_id)
 
 
 def list_equipment(db: Session, q: str, category_id: int | None,

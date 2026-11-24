@@ -20,7 +20,7 @@ import {
 
 const SIZE = 12;
 
-function EquipmentEditor({ item, categories, session, close, completed }) {
+function EquipmentEditor({ item, session, close, completed }) {
   const mutation = useMutation();
   const [condition, setCondition] = useState(item?.condition || "good");
   const initiallyUnavailable = ["maintenance", "retired"].includes(
@@ -39,7 +39,6 @@ function EquipmentEditor({ item, categories, session, close, completed }) {
         name: data.get("name").trim(),
         asset_code: data.get("asset_code").trim(),
         location: data.get("location").trim(),
-        category_id: Number(data.get("category_id")),
         description: item ? data.get("description").trim() : "",
         condition,
         service_status: status,
@@ -81,23 +80,6 @@ function EquipmentEditor({ item, categories, session, close, completed }) {
                 required
                 maxLength={40}
               />
-            </label>
-            <label>
-              Category
-              <select
-                name="category_id"
-                defaultValue={item?.category_id || ""}
-                required
-              >
-                <option value="" disabled>
-                  Select a category
-                </option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
             </label>
             <label>
               Location Code
@@ -185,7 +167,6 @@ export function Inventory({ session }) {
   const items = useResource(
     endpoint("/equipment", { q, availability, offset, limit: SIZE }),
   );
-  const categories = useResource("/categories");
   function completed(message) {
     setEditor(null);
     setNotice(message);
@@ -201,7 +182,6 @@ export function Inventory({ session }) {
         <div className="work-inline">
           <button
             className="primary-button"
-            disabled={!categories.data?.length}
             onClick={() => setEditor({ kind: "equipment" })}
           >
             <Plus size={16} /> Add equipment
@@ -213,7 +193,6 @@ export function Inventory({ session }) {
           {notice}
         </p>
       )}
-      {categories.error && <State resource={categories}>{() => null}</State>}
       <section
         className="work-panel work-section"
         aria-label="Inventory records"
@@ -227,7 +206,7 @@ export function Inventory({ session }) {
           }}
         >
           <label className="work-grow">
-            Equipment or asset code
+            Equipment or storage rack
             <input
               type="search"
               name="search"
@@ -263,7 +242,7 @@ export function Inventory({ session }) {
                     <thead>
                       <tr>
                         <th scope="col">Equipment</th>
-                        <th scope="col">Location</th>
+                        <th scope="col">Location Code</th>
                         <th scope="col">Condition</th>
                         <th scope="col">Availability</th>
                         <th scope="col">
@@ -277,10 +256,10 @@ export function Inventory({ session }) {
                           <th scope="row">
                             {item.name}
                             <span>
-                              {item.asset_code} · {item.category}
+                              {item.asset_code}
                             </span>
                           </th>
-                          <td data-label="Location">{item.location}</td>
+                          <td data-label="Location Code">{item.location}</td>
                           <td data-label="Condition">
                             {label(item.condition)}
                           </td>
@@ -291,7 +270,6 @@ export function Inventory({ session }) {
                             <button
                               className="text-button"
                               aria-label={`Edit ${item.name}`}
-                              disabled={!categories.data?.length}
                               onClick={() =>
                                 setEditor({ kind: "equipment", item })
                               }
@@ -322,7 +300,6 @@ export function Inventory({ session }) {
       {editor?.kind === "equipment" && (
         <EquipmentEditor
           item={editor.item}
-          categories={categories.data || []}
           session={session}
           close={() => setEditor(null)}
           completed={completed}

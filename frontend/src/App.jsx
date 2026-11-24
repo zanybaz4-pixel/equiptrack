@@ -21,6 +21,7 @@ import Catalog, { BorrowRequest, EquipmentDetails } from "./Catalog.jsx";
 import { Accounts, AuditTrail, Inventory, Profile } from "./Management.jsx";
 import { Dashboard, RequestDetails, RequestList } from "./Requests.jsx";
 import { Dialog, PageTitle } from "./workspace-ui.jsx";
+import DepartmentLogo, { DEPARTMENT_NAME } from "./DepartmentLogo.jsx";
 
 const borrowerNav = [
   ["/", "Dashboard", LayoutDashboard],
@@ -221,15 +222,10 @@ export default function App({
       </a>
       <aside className="work-sidebar">
         <a className="work-brand" href="#/">
-          <img
-            src="/images/bu-seal.png"
-            alt="Bicol University seal"
-            width="46"
-            height="46"
-          />
+          <DepartmentLogo width={64} height={64} />
           <span className="work-brand-name">
             Equip<span>Track</span>
-            <small>Bicol University</small>
+            <small>{DEPARTMENT_NAME}</small>
           </span>
         </a>
         <Navigation items={items} path={path} grouped />

@@ -16,13 +16,15 @@ The laptop's existing data is preserved. The cloud demo starts with its own synt
 
 ## Account email addresses
 
-Password recovery setup and verification are documented in [PASSWORD_RECOVERY.md](PASSWORD_RECOVERY.md). Email delivery needs a verified sender and private Brevo configuration before reset emails can be sent.
+Password recovery setup and verification are documented in [PASSWORD_RECOVERY.md](PASSWORD_RECOVERY.md). The owner's signed Gmail relay is configured, and real inbox delivery, password reset and subsequent sign-in were verified on November 24, 2026.
 
 At the user's request on November 24, 2026, account creation accepts Gmail and other valid email addresses. The previous `@example.invalid` restriction was in the account form; the API already validates and normalizes general email addresses. Existing demo accounts remain unchanged. The email identifies an EquipTrack account: this does not implement Google sign-in, email verification, or email delivery. Choose a separate EquipTrack password of at least 12 characters.
 
 This user-requested extension permits personal sign-in emails in the cloud preview. The brief's synthetic-data requirement still applies to academic test records and submitted evidence; use the seeded fictional accounts for that demonstration.
 
 ## Deployment
+
+The November 24 department interface uses the owner-supplied Mechanical Technology Department logo, maroon and gold branding, and the department name throughout sign-in, recovery and the workspace. The old seal and campus photo are removed. Categories are absent from custodian, student and faculty screens. Migration `0004_optional_equipment_category` permits new equipment without a category while preserving existing data and legacy API compatibility. The build and 50 contract/configuration checks passed; 16 isolated PostgreSQL workflow checks passed, including category-free creation, catalog visibility, editing and preservation of existing category assignments. Local browser checks covered all roles and narrow-screen layout. The expiry test fixture uses the API clock because the isolated WSL database was measured approximately 22 seconds ahead of the Windows API host; application session behavior was unchanged.
 
 Use the existing private `zanybaz4-pixel/equiptrack` repository, branch `codex/render-deployment`, and root `render.yaml` as a Render Blueprint. Both resources explicitly use `plan: free`, in Singapore. Review the resource summary before deploying. A separate Hobby workspace can keep this deployment apart from other projects and their free database allowance. Do not replace, reset, or delete another project's database.
 

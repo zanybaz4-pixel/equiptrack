@@ -2,6 +2,8 @@
 
 PostgreSQL 17; revision `0001_initial`. The authoritative DDL is `backend/migrations/versions/0001_initial.sql`; Alembic executes it transactionally. The schema has exactly the six proposed business tables plus Alembic's technical version table. All foreign keys restrict deletion. All IDs are generated `bigint` identity primary keys. All timestamps are timezone-aware. Dates in examples are synthetic.
 
+Department interface update, November 24, 2026: forward revision `0004_optional_equipment_category` makes `equipment_items.category_id` optional. New equipment does not require a category, and catalog queries include uncategorized equipment. Existing category assignments and records are preserved when editing without a category. Category controls and labels are removed from all user interfaces; the legacy API fields remain compatible. The remaining dictionary documents the original business-table foundation; later migrations also add sessions and password-recovery tables.
+
 Primary academic reference: brief R3, p. 10, requires at least three related tables, ERD/dictionary, an authoritative server database, explained client storage, and a demonstrated restore. The six-table design meets the planned size/relationship requirement but its execution/restore evidence is still pending. Client state/storage decisions are recorded in ARCHITECTURE.md; no browser store replaces this database.
 
 ## ERD
@@ -10,7 +12,7 @@ Primary academic reference: brief R3, p. 10, requires at least three related tab
 erDiagram
     users ||--o{ borrowing_requests : "borrower_id"
     users o|--o{ borrowing_requests : "decided_by"
-    equipment_categories ||--o{ equipment_items : "category_id"
+    equipment_categories o|--o{ equipment_items : "optional category_id"
     equipment_items ||--o{ borrowing_requests : "equipment_id"
     borrowing_requests ||--o| loan_records : "request_id; one release"
     equipment_items ||--o{ loan_records : "equipment_id; history"
@@ -112,7 +114,7 @@ Unless marked nullable, fields are required.
 | Column | Type | Meaning / constraint |
 |---|---|---|
 | id | bigint | Identity PK |
-| category_id | bigint FK | Category, restrict deletion |
+| category_id | nullable bigint FK | Optional legacy category, restrict deletion |
 | asset_code | varchar(40) | Unique nonblank school asset identifier |
 | name | varchar(120) | Nonblank equipment name |
 | description | text | Public equipment description; default empty |

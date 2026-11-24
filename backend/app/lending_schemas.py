@@ -114,7 +114,7 @@ class CategoryIn(Input):
 
 
 class EquipmentIn(Input):
-    category_id: PositiveId
+    category_id: PositiveId | None = None
     asset_code: Annotated[str, StringConstraints(strip_whitespace=True, to_upper=True, min_length=1, max_length=40)]
     name: Name
     location: Name

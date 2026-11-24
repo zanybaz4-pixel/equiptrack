@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import App from "./App.jsx";
 import { api } from "./api.js";
 import PasswordRecovery from "./PasswordRecovery.jsx";
+import DepartmentLogo, { DEPARTMENT_NAME } from "./DepartmentLogo.jsx";
 import { Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 
 export default function SessionGate() {
@@ -117,18 +118,12 @@ export default function SessionGate() {
       <div className="login-layout">
         <section className="login-card" aria-labelledby="sign-in-title">
           <div className="login-seal-wrap">
-            <img
-              className="login-seal"
-              src="/images/bu-seal.png"
-              width="104"
-              height="104"
-              alt="Bicol University seal"
-            />
+            <DepartmentLogo className="login-seal" width={120} height={120} />
           </div>
-          <p className="login-university">Bicol University</p>
+          <p className="login-department">{DEPARTMENT_NAME}</p>
           <h1 id="sign-in-title">Sign in to EquipTrack</h1>
           <p className="login-description">
-            Your campus resources, in one shared workspace.
+            Your department’s equipment, in one shared workspace.
           </p>
           <form
             onSubmit={signIn}

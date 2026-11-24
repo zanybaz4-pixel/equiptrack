@@ -17,8 +17,8 @@ class EquipmentOut(BaseModel):
     name: str
     description: str
     location: str
-    category_id: int
-    category: str
+    category_id: int | None
+    category: str | None
     condition: str
     availability: Availability
 

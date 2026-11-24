@@ -2,13 +2,9 @@ import { useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
-  Laptop,
   MapPin,
-  Microscope,
-  MonitorPlay,
-  Package,
   Search,
-  Video,
+  Wrench,
 } from "lucide-react";
 import { api } from "./api.js";
 import {
@@ -30,23 +26,13 @@ import {
 } from "./workspace-ui.jsx";
 
 const SIZE = 12;
-const categoryIcons = {
-  Presentation: MonitorPlay,
-  Computing: Laptop,
-  "Audio & Video": Video,
-  Laboratory: Microscope,
-};
-
 export default function Catalog() {
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("");
   const [availability, setAvailability] = useState("");
   const [offset, setOffset] = useState(0);
-  const categories = useResource("/categories");
   const catalog = useResource(
     endpoint("/equipment", {
       q: query,
-      category_id: category,
       availability,
       offset,
       limit: SIZE,
@@ -63,34 +49,17 @@ export default function Catalog() {
     <>
       <PageTitle
         title="Equipment catalog"
-        description="Find school equipment and check availability for your borrowing dates."
+        description="Find department equipment and check availability for your borrowing dates."
       />
       <form className="work-filters work-panel" onSubmit={search}>
         <label className="work-grow">
-          Equipment or asset code
+          Equipment or storage rack
           <input
             name="search"
             type="search"
             placeholder="Search the catalog"
             maxLength={120}
           />
-        </label>
-        <label>
-          Category
-          <select
-            value={category}
-            onChange={(event) => {
-              setCategory(event.target.value);
-              setOffset(0);
-            }}
-          >
-            <option value="">All categories</option>
-            {categories.data?.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </select>
         </label>
         <label>
           Availability
@@ -113,14 +82,6 @@ export default function Catalog() {
           <Search size={16} /> Search
         </button>
       </form>
-      {categories.error && (
-        <p className="work-error" role="alert">
-          Categories could not load.
-          <button className="text-button" onClick={categories.reload}>
-            Retry categories
-          </button>
-        </p>
-      )}
       <State
         resource={catalog}
         empty={
@@ -136,16 +97,15 @@ export default function Catalog() {
             </p>
             <div className="work-catalog-grid">
               {page.items.map((item) => {
-                const Icon = categoryIcons[item.category] || Package;
                 return (
                   <article className="work-equipment" key={item.id}>
                     <div className="work-equipment-image">
-                      <Icon size={43} strokeWidth={1.5} aria-hidden="true" />
+                      <Wrench size={43} strokeWidth={1.5} aria-hidden="true" />
                       <Badge value={item.availability} />
                     </div>
                     <div className="work-equipment-body">
                       <p className="work-muted">
-                        {item.asset_code} · {item.category}
+                        {item.asset_code}
                       </p>
                       <h2>
                         <a href={`#/equipment/${item.id}`}>{item.name}</a>
@@ -195,9 +155,8 @@ export function EquipmentDetails({ id, session }) {
           <section className="work-panel work-detail">
             <Fields
               entries={[
-                ["Asset code", data.asset_code],
-                ["Category", data.category],
-                ["Location", data.location],
+                ["Storage Rack", data.asset_code],
+                ["Location Code", data.location],
                 ["Condition", label(data.condition)],
                 ["Current availability", <Badge value={data.availability} />],
               ]}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import DepartmentLogo, { DEPARTMENT_NAME } from "./DepartmentLogo.jsx";
 import {
   ArrowLeft,
   ArrowRight,
@@ -134,7 +135,7 @@ export function Dashboard({ session }) {
     ? [
         {
           title: "Equipment inventory",
-          description: "Assets, categories and availability",
+          description: "Equipment records and availability",
           path: "/admin/inventory",
           Icon: Layers,
         },
@@ -183,7 +184,7 @@ export function Dashboard({ session }) {
           </h1>
           <p>
             {admin
-              ? "A clear view of requests, campus equipment and every handover."
+              ? "A clear view of requests, department equipment and every handover."
               : "Your requests, upcoming pickups and equipment returns, together."}
           </p>
           <div className="dashboard-intro-actions">
@@ -208,9 +209,9 @@ export function Dashboard({ session }) {
           </div>
         </div>
         <div className="dashboard-campus-card">
-          <img src="/images/bu-seal.png" alt="" width="49" height="49" />
+          <DepartmentLogo width={86} height={86} decorative />
           <div>
-            <strong>Bicol University</strong>
+            <strong>{DEPARTMENT_NAME}</strong>
             <span>Equipment borrowing workspace</span>
           </div>
         </div>
@@ -410,7 +411,7 @@ export function RequestList({ view, session }) {
       <section className="work-panel work-section" aria-label={config.title}>
         <form className="work-filters work-panel-filters" onSubmit={search}>
           <label className="work-grow">
-            Equipment or asset code
+            Equipment or storage rack
             <input
               name="search"
               type="search"

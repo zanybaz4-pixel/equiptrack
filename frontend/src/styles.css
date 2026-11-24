@@ -37,21 +37,21 @@
     -apple-system,
     "Segoe UI",
     sans-serif;
-  color: #18374a;
-  background: #f4f9fc;
+  color: #342b30;
+  background: #faf8f5;
   font-synthesis: none;
-  --ink: #18374a;
-  --muted: #5f7685;
-  --border: #dce9f0;
-  --brand-blue: #0077a6;
-  --brand-sky: #9eddfa;
-  --brand-orange: #ff7900;
-  --brand-orange-strong: #b84b00;
+  --ink: #342b30;
+  --muted: #766c71;
+  --border: #e8dfe2;
+  --brand-primary: #842943;
+  --brand-primary-dark: #672037;
+  --brand-accent: #e5c25e;
+  --brand-accent-strong: #8a6715;
   --brand-green: #00875a;
-  --brand-surface: #edf8fe;
-  --navy: #164863;
-  --teal: var(--brand-blue);
-  --orange: var(--brand-orange);
+  --brand-surface: #f8edf1;
+  --navy: #4b2635;
+  --teal: var(--brand-primary);
+  --orange: var(--brand-accent);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -85,7 +85,7 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid #2998cf;
+  outline: 3px solid #a85470;
   outline-offset: 3px;
 }
 h1,
@@ -124,25 +124,25 @@ h2 {
     transform 0.18s ease;
 }
 .primary-button {
-  background: var(--brand-orange-strong);
+  background: var(--brand-primary);
   color: white;
   box-shadow:
-    0 3px 8px rgb(184 75 0 / 14%),
+    0 3px 8px rgb(132 41 67 / 14%),
     inset 0 1px rgb(255 255 255 / 9%);
 }
 .primary-button:hover:not(:disabled) {
-  background: #9e4000;
-  box-shadow: 0 4px 12px rgb(184 75 0 / 22%);
+  background: #672037;
+  box-shadow: 0 4px 12px rgb(132 41 67 / 22%);
 }
 .secondary-button {
   border-color: var(--border);
   background: white;
-  color: #176283;
+  color: #842943;
   box-shadow: 0 1px 2px rgb(24 41 64 / 3%);
 }
 .secondary-button:hover:not(:disabled) {
-  background: #edf8fe;
-  border-color: #a9d5e9;
+  background: #f8edf1;
+  border-color: #d8a9bb;
 }
 .danger-button {
   color: #963b36;
@@ -174,7 +174,7 @@ h2 {
   color: var(--ink);
 }
 .icon-button:hover:not(:disabled) {
-  background: #e9eff4;
+  background: #f3eaee;
 }
 .eyebrow {
   color: var(--teal);
@@ -187,14 +187,14 @@ h2 {
   color: #973731;
 }
 
-/* Centered campus sign-in, using the university seal's blue and orange. */
+/* Department identity: the supplied logo's maroon gear and gold accents. */
 .login-page {
   position: relative;
   isolation: isolate;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  background: #4d8da8;
+  background: #441a2b;
   color: var(--ink);
 }
 .login-campus {
@@ -206,9 +206,12 @@ h2 {
 .login-campus::before {
   content: "";
   position: absolute;
-  inset: -10px;
-  background: url("/images/bu-campus.jpg") center 66% / cover no-repeat;
-  filter: blur(3px) saturate(0.7);
+  inset: 0;
+  background:
+    linear-gradient(rgb(229 194 94 / 5%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(229 194 94 / 5%) 1px, transparent 1px);
+  background-size: 64px 64px;
+  transform: rotate(-12deg) scale(1.4);
 }
 .login-campus::after {
   content: "";
@@ -216,15 +219,15 @@ h2 {
   inset: 0;
   background:
     radial-gradient(
-      ellipse at 50% 35%,
-      rgb(197 235 252 / 18%),
+      ellipse at 25% 10%,
+      rgb(229 194 94 / 16%),
       transparent 65%
     ),
     linear-gradient(
       135deg,
-      rgb(8 41 64 / 76%),
-      rgb(24 89 121 / 54%) 50%,
-      rgb(7 35 54 / 80%)
+      rgb(53 20 34 / 35%),
+      rgb(132 41 67 / 38%) 50%,
+      rgb(36 18 27 / 75%)
     );
 }
 .login-layout {
@@ -240,8 +243,8 @@ h2 {
   padding: 32px 40px 26px;
   background: linear-gradient(
     145deg,
-    rgb(255 255 255 / 88%),
-    rgb(239 248 253 / 82%)
+    rgb(255 255 255 / 97%),
+    rgb(252 246 239 / 95%)
   );
   border: 1px solid rgb(255 255 255 / 65%);
   border-radius: 24px;
@@ -261,32 +264,31 @@ h2 {
   height: 4px;
   transform: translateX(-50%);
   border-radius: 0 0 5px 5px;
-  background: var(--brand-orange);
+  background: var(--brand-accent);
 }
 .login-seal-wrap {
-  width: 104px;
-  height: 104px;
+  width: 126px;
+  height: 126px;
   margin: 0 auto 15px;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: radial-gradient(circle, #fff 35%, #e8f6fc 100%);
-  border: 1px solid #dcecf4;
-  box-shadow: 0 3px 12px rgb(0 119 166 / 5%);
+  background: transparent;
 }
 .login-seal {
   display: block;
-  width: 96px;
-  height: 96px;
+  width: 120px;
+  height: 120px;
   object-fit: contain;
 }
-.login-university {
+.login-department {
   text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.1em;
+  line-height: 1.6;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--brand-blue);
+  color: var(--brand-primary);
   margin-bottom: 12px;
 }
 .login-card h1 {
@@ -298,7 +300,7 @@ h2 {
 }
 .login-description {
   text-align: center;
-  color: #5e7888;
+  color: #7c6872;
   font-size: 0.875rem;
   line-height: 1.7;
   margin: 11px auto 0;
@@ -314,7 +316,7 @@ h2 {
   gap: 9px;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #345368;
+  color: #634a57;
 }
 .login-input-wrap {
   position: relative;
@@ -326,31 +328,31 @@ h2 {
   position: absolute;
   left: 15px;
   pointer-events: none;
-  color: #6c96aa;
+  color: #aa8191;
 }
 .login-input-wrap input {
   width: 100%;
   min-width: 0;
   height: 51px;
-  border: 1px solid #d5e3eb;
+  border: 1px solid #e4d3db;
   border-radius: 11px;
   padding: 12px 44px;
   font-size: 1rem;
   font-weight: 400;
   background: rgb(255 255 255 / 85%);
-  color: #183751;
+  color: #402d36;
   box-shadow: 0 1px 3px rgb(17 68 92 / 3%);
   transition:
     border-color 0.2s,
     box-shadow 0.2s;
 }
 .login-input-wrap input::placeholder {
-  color: #728b9b;
+  color: #9a828d;
   font-size: 0.875rem;
 }
 .login-input-wrap input:focus {
-  border-color: #3899c3;
-  box-shadow: 0 0 0 4px rgb(32 142 196 / 10%);
+  border-color: #a14a67;
+  box-shadow: 0 0 0 4px rgb(132 41 67 / 10%);
   outline: none;
 }
 .login-password-toggle {
@@ -360,12 +362,12 @@ h2 {
   width: 38px;
   display: grid;
   place-items: center;
-  color: #64889b;
+  color: #927080;
   border-radius: 8px;
 }
 .login-password-toggle:hover {
-  color: #075b82;
-  background: #edf8fe;
+  color: #842943;
+  background: #f8edf1;
 }
 .login-submit {
   display: flex;
@@ -374,9 +376,9 @@ h2 {
   height: 51px;
   border-radius: 11px;
   color: white;
-  background: var(--brand-orange-strong);
+  background: var(--brand-primary);
   box-shadow:
-    0 4px 12px rgb(184 75 0 / 15%),
+    0 4px 12px rgb(132 41 67 / 15%),
     inset 0 1px rgb(255 255 255 / 14%);
   font-size: 0.9375rem;
   font-weight: 600;
@@ -386,8 +388,8 @@ h2 {
   margin-top: 3px;
 }
 .login-submit:hover:not(:disabled) {
-  background: #9e4000;
-  box-shadow: 0 6px 16px rgb(184 75 0 / 22%);
+  background: #672037;
+  box-shadow: 0 6px 16px rgb(132 41 67 / 22%);
 }
 .login-error {
   padding: 12px 14px;
@@ -398,7 +400,7 @@ h2 {
   line-height: 1.6;
 }
 .login-privacy {
-  color: #617d8d;
+  color: #826d77;
   font-size: 0.8125rem;
   text-align: center;
   line-height: 1.7;
@@ -413,7 +415,7 @@ h2 {
   text-align: center;
   font-size: 0.75rem;
   color: #4f7567;
-  border-top: 1px solid #dfeaf0;
+  border-top: 1px solid #e8dce2;
   padding-top: 20px;
   margin-top: 22px;
 }
@@ -443,7 +445,7 @@ h2 {
 }
 .login-forgot {
   justify-self: end;
-  color: #116b84;
+  color: #842943;
   font-size: 0.86rem;
   font-weight: 600;
   text-underline-offset: 3px;
@@ -454,7 +456,7 @@ h2 {
   align-items: center;
   gap: 0.5rem;
   margin-top: 1.3rem;
-  color: #23576a;
+  color: #842943;
   font-size: 0.9rem;
   font-weight: 600;
   text-underline-offset: 3px;
