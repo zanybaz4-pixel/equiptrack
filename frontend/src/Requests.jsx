@@ -67,7 +67,7 @@ const metricItems = [
   },
 ];
 
-export function RequestTable({ items, admin }) {
+export function RequestTable({ items, admin, completedReturns = false }) {
   return (
     <div className="work-table-wrap">
       <table className="work-table">
@@ -75,7 +75,8 @@ export function RequestTable({ items, admin }) {
           <tr>
             <th scope="col">Equipment</th>
             {admin && <th scope="col">Borrower</th>}
-            <th scope="col">Return by</th>
+            <th scope="col">{completedReturns ? "Returned on" : "Return by"}</th>
+            {completedReturns && <th scope="col">Return condition</th>}
             <th scope="col">Status</th>
             <th scope="col">
               <span className="sr-only">Actions</span>
@@ -103,9 +104,12 @@ export function RequestTable({ items, admin }) {
                   {row.borrower_name || `#${row.borrower_id}`}
                 </td>
               )}
-              <td data-label="Return by">
-                <time dateTime={row.due_at}>{displayDate(row.due_at)}</time>
+              <td data-label={completedReturns ? "Returned on" : "Return by"}>
+                <time dateTime={completedReturns ? row.loan?.returned_at : row.due_at}>
+                  {displayDate(completedReturns ? row.loan?.returned_at : row.due_at)}
+                </time>
               </td>
+              {completedReturns && <td data-label="Return condition">{label(row.loan?.return_condition)}</td>}
               <td data-label="Status">
                 <RequestBadge row={row} />
               </td>
@@ -364,8 +368,7 @@ const views = {
   },
   returns: {
     title: "Record returns",
-    description: "Inspect returned equipment and record its condition.",
-    custody: "active",
+    description: "View completed returns or record the return of equipment still on loan.",
   },
   active: {
     title: "Active loans",
@@ -387,13 +390,14 @@ const views = {
 export function RequestList({ view, session }) {
   const config = views[view];
   const [status, setStatus] = useState(view === "history" ? "returned" : "");
+  const [returnView, setReturnView] = useState("completed");
   const [query, setQuery] = useState("");
   const [offset, setOffset] = useState(0);
   const rows = useResource(
     endpoint("/requests", {
       q: query,
-      status: config.status || status,
-      custody: config.custody,
+      status: view === "returns" ? (returnView === "completed" ? "returned" : "") : config.status || status,
+      custody: view === "returns" ? (returnView === "awaiting" ? "active" : undefined) : config.custody,
       offset,
       limit: SIZE + 1,
     }),
@@ -408,6 +412,20 @@ export function RequestList({ view, session }) {
   return (
     <>
       <PageTitle title={config.title} description={config.description} />
+      {view === "returns" && (
+        <div className="work-return-switch" role="group" aria-label="Return records">
+          {[["completed", "Completed returns"], ["awaiting", "Awaiting return"]].map(([value, title]) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={returnView === value}
+              onClick={() => { setReturnView(value); setOffset(0); }}
+            >
+              {title}
+            </button>
+          ))}
+        </div>
+      )}
       <section className="work-panel work-section" aria-label={config.title}>
         <form className="work-filters work-panel-filters" onSubmit={search}>
           <label className="work-grow">
@@ -445,9 +463,13 @@ export function RequestList({ view, session }) {
           {(items) => (
             <>
               {items.length ? (
-                <RequestTable items={items.slice(0, SIZE)} admin={admin} />
+                <RequestTable items={items.slice(0, SIZE)} admin={admin} completedReturns={view === "returns" && returnView === "completed"} />
               ) : (
-                <p className="work-state">No requests match this view.</p>
+                <p className="work-state">{view === "returns"
+                  ? returnView === "completed"
+                    ? "No completed returns match this search. Recorded returns will appear here."
+                    : "No equipment is awaiting return. Completed records are in Completed returns."
+                  : "No requests match this view."}</p>
               )}
               <Pager
                 offset={offset}
