@@ -60,6 +60,7 @@
   text-transform: uppercase;
 }
 .work-nav a {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 11px;
@@ -79,6 +80,9 @@
   flex-shrink: 0;
   stroke-width: 1.65;
 }
+.work-nav a > span:not(.work-nav-indicator) {
+  white-space: nowrap;
+}
 .work-nav a:hover {
   color: #075b82;
   background: #e0f2fc;
@@ -96,11 +100,14 @@
   opacity: 1;
 }
 .work-nav-indicator {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
   width: 5px;
   height: 5px;
   background: var(--brand-orange);
   border-radius: 50%;
-  margin-left: auto;
 }
 .work-sidebar-footer {
   margin-top: auto;

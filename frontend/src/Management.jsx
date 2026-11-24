@@ -40,12 +40,12 @@ function EquipmentEditor({ item, categories, session, close, completed }) {
         asset_code: data.get("asset_code").trim(),
         location: data.get("location").trim(),
         category_id: Number(data.get("category_id")),
-        description: data.get("description").trim(),
+        description: item ? data.get("description").trim() : "",
         condition,
         service_status: status,
       };
       if (!body.name || !body.asset_code || !body.location)
-        throw new Error("Enter a name, asset code and location.");
+        throw new Error("Enter an equipment name, storage rack and location code.");
       await write(
         session,
         item ? "PUT" : "POST",
@@ -74,7 +74,7 @@ function EquipmentEditor({ item, categories, session, close, completed }) {
               />
             </label>
             <label>
-              Asset code
+              Storage Rack
               <input
                 name="asset_code"
                 defaultValue={item?.asset_code}
@@ -100,7 +100,7 @@ function EquipmentEditor({ item, categories, session, close, completed }) {
               </select>
             </label>
             <label>
-              Location
+              Location Code
               <input
                 name="location"
                 defaultValue={item?.location}
@@ -153,15 +153,17 @@ function EquipmentEditor({ item, categories, session, close, completed }) {
               Record the return to change the condition or service status.
             </p>
           )}
-          <label>
-            Description
-            <textarea
-              name="description"
-              defaultValue={item?.description}
-              maxLength={1000}
-              rows={3}
-            />
-          </label>
+          {item && (
+            <label>
+              Description
+              <textarea
+                name="description"
+                defaultValue={item.description}
+                maxLength={1000}
+                rows={3}
+              />
+            </label>
+          )}
         </fieldset>
         <ActionError error={mutation.error} />
         <FormActions
@@ -169,41 +171,6 @@ function EquipmentEditor({ item, categories, session, close, completed }) {
           submit={item ? "Save equipment" : "Add equipment"}
           close={close}
         />
-      </form>
-    </Dialog>
-  );
-}
-
-function CategoryEditor({ session, close, completed }) {
-  const mutation = useMutation();
-  function submit(event) {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    mutation.run(async () => {
-      const name = data.get("name").trim();
-      if (!name) throw new Error("Enter a category name.");
-      await write(session, "POST", "/categories", {
-        name,
-        description: data.get("description").trim(),
-      });
-      completed("Category added.");
-    });
-  }
-  return (
-    <Dialog title="Add category" close={close} busy={mutation.busy}>
-      <form className="work-dialog-form" onSubmit={submit}>
-        <fieldset className="work-form-fields" disabled={mutation.busy}>
-          <label>
-            Category name
-            <input name="name" required maxLength={80} />
-          </label>
-          <label>
-            Description
-            <textarea name="description" rows={3} maxLength={500} />
-          </label>
-        </fieldset>
-        <ActionError error={mutation.error} />
-        <FormActions busy={mutation.busy} submit="Add category" close={close} />
       </form>
     </Dialog>
   );
@@ -222,25 +189,16 @@ export function Inventory({ session }) {
   function completed(message) {
     setEditor(null);
     setNotice(message);
-    if (editor.kind === "category") categories.reload();
-    else {
-      setOffset(0);
-      items.reload();
-    }
+    setOffset(0);
+    items.reload();
   }
   return (
     <>
       <PageTitle
         title="Equipment inventory"
-        description="Manage asset records, categories and service status."
+        description="Manage equipment records and service status."
       >
         <div className="work-inline">
-          <button
-            className="secondary-button"
-            onClick={() => setEditor({ kind: "category" })}
-          >
-            <Plus size={16} /> Add category
-          </button>
           <button
             className="primary-button"
             disabled={!categories.data?.length}
@@ -365,13 +323,6 @@ export function Inventory({ session }) {
         <EquipmentEditor
           item={editor.item}
           categories={categories.data || []}
-          session={session}
-          close={() => setEditor(null)}
-          completed={completed}
-        />
-      )}
-      {editor?.kind === "category" && (
-        <CategoryEditor
           session={session}
           close={() => setEditor(null)}
           completed={completed}
