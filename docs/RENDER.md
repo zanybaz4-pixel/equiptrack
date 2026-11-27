@@ -30,8 +30,6 @@ Use the existing private `zanybaz4-pixel/equiptrack` repository, branch `codex/r
 
 The Blueprint creates a new database and generates separate runtime and demonstration passwords. Startup normalizes Render's PostgreSQL URL for the installed psycopg driver, creates the restricted `equiptrack_app` role, applies the existing Alembic migrations, and inserts missing synthetic catalog records and accounts. Repeated startup preserves existing equipment records and account password hashes. The API child process does not receive the migration-owner or provisioning passwords. No local database records or sign-in sessions are uploaded by this setup.
 
-Demo emails are `custodian@example.invalid`, `student@example.invalid`, and `faculty@example.invalid`. Their passwords are the corresponding `DEMO_CUSTODIAN_PASSWORD`, `DEMO_STUDENT_PASSWORD`, and `DEMO_FACULTY_PASSWORD` values in the web service's private Render Environment settings. They are never printed in startup logs or committed to Git. Keep those values stable after provisioning. Redeploying with a different provisioning password does not change an existing account password.
-
 The database's external IP allowlist is empty. Only Render's private network can connect. The running web service uses the restricted database role; migration operations use the separate owner connection only during startup. Automatic source deployment is disabled so that future pushes require a deliberate deployment.
 
 ## Free-plan limits
