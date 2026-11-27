@@ -1,6 +1,4 @@
-# EquipTrack
-
-School Equipment Borrowing, Return, and Tracking System · MIS 215
+# EquipTrack: Equipment Borrowing and Return Tracking System for Bicol University College of Industrial Technology – Mechanical Technology Department
 
 **Current increment: Phase 6.** The three-tier WSL2 deployment, backup recovery and six performance runs have been verified. [Phase 5](docs/PHASE5.md) records the status of the second-device rehearsal.
 
