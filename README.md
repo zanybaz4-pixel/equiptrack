@@ -6,7 +6,7 @@ School Equipment Borrowing, Return, and Tracking System · MIS 215
 
 The primary academic reference is the MIS 215 Term Project Brief supplied by the course. See the [R1–R7 alignment and gaps](docs/BRIEF_ALIGNMENT.md). The [original EquipTrack request](docs/PROJECT_REQUEST.md) specifies the five core transactions.
 
-The demonstration organization, **Bicol Learning Academy**, is fictional. No organizational approval, field interview or FIC topic/protocol approval is implied. The current sources partly ground the scenario; specific lending practices still need evidence in the [Basis of the Scenario](docs/BASIS_OF_SCENARIO.md).
+The demonstration organization, **Bicol University College of Industrial Technology – Mechanical Technology Department in Legazpi City, Albay**. The current sources partly ground the scenario; specific lending practices still need evidence in the [Basis of the Scenario](docs/BASIS_OF_SCENARIO.md).
 
 ## Start here
 
