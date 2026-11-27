@@ -2,7 +2,7 @@
 
 Review date: **2026-11-13**. Exact direct package versions below were verified against PyPI/npm publisher metadata, installed locally and checked by imports/builds. `frontend/package-lock.json` records resolved npm versions/integrities and license metadata. `backend/requirements-dev.lock.txt` snapshots the installed Windows Python test environment; primary runtime requirements are in `requirements.txt`. `dependency-inventory.json` records transitive metadata, including optional npm packages for other platforms.
 
-**Primary policy: [MIS 215 Term Project Brief](MIS215_TermProject_Brief.pdf), §6.1–6.2, pp. 12–14.** Every system component and build, deploy and test tool must be OSI-licensed. The laptop OS and code editor are exempt, and Git hosting services are allowed. Accepted examples include React, FastAPI, PostgreSQL, Nginx, Engine, Compose, OpenAPI, curl and k6. EquipTrack uses a root [MIT License](../LICENSE), listed as an example in §9.2.
+**Primary policy: MIS 215 Term Project Brief (external course material), §6.1–6.2, pp. 12–14.** Every system component and build, deploy and test tool must be OSI-licensed. The laptop OS and code editor are exempt, and Git hosting services are allowed. Accepted examples include React, FastAPI, PostgreSQL, Nginx, Engine, Compose, OpenAPI, curl and k6. EquipTrack uses a root [MIT License](../LICENSE), listed as an example in §9.2.
 
 | Component | Name and Version | License | Reason for Choosing It |
 |---|---|---|---|

@@ -1,6 +1,6 @@
 # EquipTrack defense rehearsal
 
-Follow the 15-minute format in section 10 of the [MIS 215 brief](MIS215_TermProject_Brief.pdf). Use a synthetic borrower, a synthetic custodian, the laptop and a second device on the same private network.
+Follow the 15-minute format in section 10 of the MIS 215 brief (external course material). Use a synthetic borrower, a synthetic custodian, the laptop and a second device on the same private network.
 
 | Time | Show | Evidence |
 | --- | --- | --- |

@@ -1,9 +1,5 @@
 # Installation and deployment
 
-## Observed environment (2026-11-16, Asia/Manila)
-
-The Windows workspace is `C:\Users\bryan\Desktop\EQUIPTRACK`. The approved installation is Ubuntu 24.04 LTS on WSL2, with Docker Engine 29.9.3, Compose 5.7.1 and mkcert 1.4.4. The Engine listens on Ubuntu's Unix socket. The Phase 5 deployment and tests ran inside this distribution. See the [verification and restart instructions](PHASE5.md).
-
 ## Ubuntu WSL2 and Docker Engine
 
 The primary brief, R5 pp. 10–11, accepts **Docker Engine inside WSL2** for Windows. Section 6.1 explicitly rejects Docker Desktop (p. 13). Set `APP_ORIGIN` to the exact HTTPS URL used by the browser. Full login uses a Secure cookie and requires HTTPS.
@@ -53,7 +49,7 @@ Record the Engine, Compose and image digests used for the final evaluation. The 
 From WSL Bash after infrastructure approval/setup:
 
 ```bash
-cd /mnt/c/Users/bryan/Desktop/EQUIPTRACK
+cd "/path/to/equiptrack"
 test -f .env || cp .env.example .env
 ```
 
@@ -71,7 +67,7 @@ Then generate files (the script refuses to overwrite existing certificates):
 bash scripts/dev-certs.sh
 ```
 
-For a WSL command-line check, run `CURL_CA_BUNDLE="$(mkcert -CAROOT)/rootCA.pem" bash scripts/smoke.sh` after startup. On this laptop, use the public copy at `infra/certs/equiptrack-rootCA.pem`. Curl uses that CA to validate the chain and hostname.
+For a WSL command-line check, run `CURL_CA_BUNDLE="$(mkcert -CAROOT)/rootCA.pem" bash scripts/smoke.sh` after startup. The certificate script also saves the public copy at `infra/certs/equiptrack-rootCA.pem`. Curl uses that CA to validate the chain and hostname.
 
 For a later LAN test, include the actual hostname/LAN IP as extra arguments when first generating the certificate, e.g. `bash scripts/dev-certs.sh equiptrack.local 192.168.1.25`. Those are examples; determine the actual network address. Changing certificate names later requires reviewing/replacing existing files. Do not use the example IP blindly.
 
@@ -95,10 +91,10 @@ Stop without deleting data: `docker compose stop`. Recreate containers without d
 
 ## Native development (not the final deployment)
 
-Project-local dependencies have already been installed in this workspace. To recreate them with Python and Node available:
+Install project-local dependencies with Python and Node available:
 
 ```powershell
-Set-Location C:\Users\bryan\Desktop\EQUIPTRACK
+Set-Location C:\path\to\equiptrack
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r backend\requirements-dev.txt
 Set-Location frontend
@@ -108,7 +104,7 @@ npm ci
 Native API startup requires a working PostgreSQL instance. In a PowerShell window, set `DATABASE_URL` to a local **runtime-role** connection URL, then:
 
 ```powershell
-Set-Location C:\Users\bryan\Desktop\EQUIPTRACK\backend
+Set-Location C:\path\to\equiptrack\backend
 ..\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
@@ -117,7 +113,7 @@ For a separately approved native development database, set `MIGRATION_DATABASE_U
 In another PowerShell window:
 
 ```powershell
-Set-Location C:\Users\bryan\Desktop\EQUIPTRACK\frontend
+Set-Location C:\path\to\equiptrack\frontend
 npm run dev
 ```
 
@@ -152,7 +148,7 @@ $lanAddress = 'WINDOWS_LAN_IPV4'
 $wslAddress = 'WSL_IPV4'
 netsh interface portproxy add v4tov4 "listenaddress=$lanAddress" listenport=8443 "connectaddress=$wslAddress" connectport=8443
 New-NetFirewallRule -Name EquipTrack-WSL2-HTTPS-8443 -DisplayName 'EquipTrack WSL2 HTTPS' -Direction Inbound -Action Allow -Protocol TCP -LocalAddress $lanAddress -LocalPort 8443 -RemoteAddress LocalSubnet -Profile Private
-curl.exe -4 --cacert C:/Users/bryan/Desktop/EQUIPTRACK/infra/certs/equiptrack-rootCA.pem --ssl-revoke-best-effort "https://${lanAddress}:8443/api/health/ready"
+curl.exe -4 --cacert infra/certs/equiptrack-rootCA.pem --ssl-revoke-best-effort "https://${lanAddress}:8443/api/health/ready"
 ```
 
 For the demo, open the LAN URL on both devices. Use the public CA at `infra/certs/equiptrack-rootCA.pem` to establish browser trust with each device owner. Match the SHA-256 fingerprint in [Phase 5](PHASE5.md#resume-on-this-laptop).

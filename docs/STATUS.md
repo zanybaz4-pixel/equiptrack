@@ -6,7 +6,7 @@ Date: **2026-11-13 (Asia/Manila)**. Scope: the requested initial inspection, imp
 
 ## Primary-reference update
 
-The user subsequently supplied `docs/MIS215_TermProject_Brief.pdf` and designated it the primary reference. All 22 pages were read and key requirement/policy tables visually reviewed. [BRIEF_ALIGNMENT.md](BRIEF_ALIGNMENT.md) now maps R1–R7, FOSS/framework policy, milestones and rubric requirements; the PDF is preserved unchanged. The initial absence below is historical, not the current state.
+The user subsequently supplied `docs/MIS215_TermProject_Brief.pdf` and designated it the primary reference. All 22 pages were read and key requirement/policy tables visually reviewed. The phase records refer to a separate alignment document and course brief. Those materials were absent from the supplied archive.
 
 Updated planning adds recorded curl success/failure for every endpoint, required HTTP 400 coverage, client-storage decisions, host/resource and bottleneck evidence, the 3–5-page architectural comparison, required privacy/report formats, project LICENSE and synthetic-account/defense artifacts. Exactly five transactions and the selected stack remain compatible with the brief. Docker Desktop is expressly rejected, while the host OS/code editor exemption and WSL2 Engine acceptance are now confirmed. Broader scenario grounding remains incomplete; BASIS_OF_SCENARIO.md records the gaps.
 

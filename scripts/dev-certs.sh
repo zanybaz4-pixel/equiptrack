@@ -8,6 +8,8 @@ if [[ -f infra/certs/equiptrack.pem || -f infra/certs/equiptrack-key.pem ]]; the
   exit 1
 fi
 umask 077
+mkdir -p infra/certs
 mkcert -cert-file infra/certs/equiptrack.pem -key-file infra/certs/equiptrack-key.pem \
   localhost 127.0.0.1 ::1 "$@"
+cp "$(mkcert -CAROOT)/rootCA.pem" infra/certs/equiptrack-rootCA.pem
 echo 'Certificates created. Each client must trust the development CA separately.'

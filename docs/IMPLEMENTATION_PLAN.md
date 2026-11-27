@@ -6,7 +6,7 @@ Backend, browser and integration verification are recorded in [PHASE2.md](PHASE2
 
 The user requested an incremental project and, for the first increment, environment inspection, a detailed plan, recommended structure, architecture, database schema, and an initial scaffold. This increment provides those artifacts plus a functional read-only API/catalog slice. It does not claim the six-phase system is finished.
 
-The supplied [MIS 215 Term Project Brief](MIS215_TermProject_Brief.pdf) is now the primary academic reference. [BRIEF_ALIGNMENT.md](BRIEF_ALIGNMENT.md) maps its R1–R7 and policy requirements to implementation/evidence gaps; [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md) defines the required milestones and report formats. Retain the user's compatible stricter selections, including exactly five transactions. Propose **Option A: REST over HTTPS**; FIC approval is not yet recorded. Do not introduce Supabase, Firebase, PostgREST, Hasura or other database-generated application tiers, cloud databases, or a proprietary runtime substitute.
+The supplied MIS 215 Term Project Brief (external course material) is now the primary academic reference. [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md) defines the required milestones and report formats. Retain the user's compatible stricter selections, including exactly five transactions. Propose **Option A: REST over HTTPS**; FIC approval is not yet recorded. Do not introduce Supabase, Firebase, PostgREST, Hasura or other database-generated application tiers, cloud databases, or a proprietary runtime substitute.
 
 ## Phase 1 — planning and architecture (this increment)
 

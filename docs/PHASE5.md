@@ -1,6 +1,6 @@
 # Phase 5 deployment and recovery
 
-Verified on November 16, 2026, Asia/Manila, against the [MIS 215 Term Project Brief](MIS215_TermProject_Brief.pdf), R3 and R5.
+Verified on November 16, 2026, Asia/Manila, against the MIS 215 Term Project Brief (external course material), R3 and R5.
 
 - Ubuntu 24.04 LTS ran under WSL2. Docker Engine 29.9.3 and Compose 5.7.1 built and started the project using Ubuntu's Unix socket. The migration exited successfully, and PostgreSQL, FastAPI, the React web tier and Nginx were healthy. Only HTTPS was published, on loopback port 8443.
 - The mkcert 1.4.4 certificate covers `localhost`, the two loopback IP addresses and the laptop's observed LAN IP, `192.168.1.20`. Curl verified the certificate with the local root CA. The frontend and readiness endpoint returned 200; the catalog returned 401 when signed out. Windows also verified the same certificate and readiness endpoint at `192.168.1.20:8443` after enabling the Private Ethernet rule for the Android test.

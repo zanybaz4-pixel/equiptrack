@@ -1,6 +1,6 @@
 # Academic deliverables and acceptance checklist
 
-Primary reference: [MIS 215 Term Project Brief](MIS215_TermProject_Brief.pdf), §§7–13, pp. 15–22. These are planned deliverables, not claims of submission or approval. Exact dates must come from BU-LMS/FIC announcements; none were supplied. No submission, calendar scheduling, external contact or publication is authorized by this checklist alone.
+Primary reference: MIS 215 Term Project Brief (external course material), §§7–13, pp. 15–22. These are planned deliverables, not claims of submission or approval. Exact dates must come from BU-LMS/FIC announcements; none were supplied. No submission, calendar scheduling, external contact or publication is authorized by this checklist alone.
 
 ## Milestones and relative work plan
 

@@ -1,6 +1,6 @@
 # Phase 4 integration verification
 
-The [MIS 215 brief](MIS215_TermProject_Brief.pdf) remains the primary reference. Phase 4 connects its R2 protocol testing, R3 data integrity and R4 access controls to repeatable tests. The [current OpenAPI specification](openapi.json) was exported from the application and includes all 25 HTTP operations.
+The MIS 215 brief (external course material) remains the primary reference. Phase 4 connects its R2 protocol testing, R3 data integrity and R4 access controls to repeatable tests. At Phase 4 the exported API described 25 HTTP operations. The [current OpenAPI specification](openapi.json) also includes password recovery.
 
 ## Tested behavior
 

@@ -18,7 +18,7 @@ Use the exact HTTPS browser origin as `APP_ORIGIN`. Send `Origin` on login and a
 
 ## Route reference
 
-The paths below are relative to `/api`. [OpenAPI](openapi-phase2.json) describes the actual input and output shapes. Body-bearing endpoints accept JSON. A malformed body returns 400. Schema validation returns 422. Missing or expired sessions return 401. Authorization failures return 403, with 404 for requests outside a borrower's scope. State conflicts return 409. Database connection failures return 503. Errors use `{error:{code,message,request_id}}`.
+The paths below are relative to `/api`. [Current OpenAPI](openapi.json) describes the input and output shapes for the current release. Body-bearing endpoints accept JSON. A malformed body returns 400. Schema validation returns 422. Missing or expired sessions return 401. Authorization failures return 403, with 404 for requests outside a borrower's scope. State conflicts return 409. Database connection failures return 503. Errors use `{error:{code,message,request_id}}`.
 
 | Method and path | Access | Result |
 |---|---|---|

@@ -1,6 +1,6 @@
 # R7 evaluation plan
 
-Primary reference: [MIS 215 Term Project Brief](MIS215_TermProject_Brief.pdf), R7 pp. 11–12. See the [six completed experiments](PHASE6.md).
+Primary reference: MIS 215 Term Project Brief (external course material), R7 pp. 11–12. See the [six completed experiments](PHASE6.md).
 
 ## Part A: controlled performance experiments
 
