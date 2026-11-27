@@ -1,89 +1,71 @@
-# EquipTrack: Equipment Borrowing and Return Tracking System for Bicol University College of Industrial Technology – Mechanical Technology Department
+# EquipTrack
 
-**Current increment: Phase 6.** The three-tier WSL2 deployment, backup recovery and six performance runs have been verified. [Phase 5](docs/PHASE5.md) records the status of the second-device rehearsal.
+EquipTrack tracks equipment borrowing and returns for a synthetic demonstration of Bicol University College of Industrial Technology’s Mechanical Technology Department. Borrowers check availability, submit requests and review their history. Custodians manage inventory and accounts, decide requests, release equipment and record returns.
 
-The primary academic reference is the MIS 215 Term Project Brief supplied by the course. See the [R1–R7 alignment and gaps](docs/BRIEF_ALIGNMENT.md). The [original EquipTrack request](docs/PROJECT_REQUEST.md) specifies the five core transactions.
+## Prerequisites
 
-The demonstration organization, **Bicol University College of Industrial Technology – Mechanical Technology Department in Legazpi City, Albay**. The current sources partly ground the scenario; specific lending practices still need evidence in the [Basis of the Scenario](docs/BASIS_OF_SCENARIO.md).
+Use Linux or Ubuntu on WSL2 with Docker Engine, Docker Compose, Bash, curl and mkcert. The [installation guide](docs/INSTALLATION.md) covers WSL2, certificate trust and optional LAN access.
 
-## Start here
+## Start the application
 
-- [Primary brief alignment and acceptance gaps](docs/BRIEF_ALIGNMENT.md)
-- [Milestones, report formats and submission checklist](docs/SUBMISSION_CHECKLIST.md)
-- [Performance and architectural comparison plan](docs/EVALUATION_PLAN.md)
-- [Detailed six-phase plan and acceptance criteria](docs/IMPLEMENTATION_PLAN.md)
-- [Requirements and proposed workflow](docs/REQUIREMENTS.md)
-- [Three-tier architecture and transaction design](docs/ARCHITECTURE.md)
-- [ERD and data dictionary](docs/DATABASE.md)
-- [Phase 2 API contract and setup](docs/PHASE2.md)
-- [Current OpenAPI specification](docs/openapi.json)
-- [Installation, HTTPS, LAN, backup and restore](docs/INSTALLATION.md)
-- [Optional Render internet preview](docs/RENDER.md)
-- [Testing and performance evaluation](docs/TESTING.md)
-- [Phase 3 walkthrough and browser verification](docs/PHASE3.md)
-- [Phase 4 integration results and reproduction](docs/PHASE4.md)
-- [Phase 5 deployment and recovery evidence](docs/PHASE5.md)
-- [Phase 6 results and academic package](docs/PHASE6.md)
-- [Raw k6 results and resource measurements](evidence/performance/)
-- [Environment inspection and verification results](docs/STATUS.md)
-- [Stack versions, licenses and policy gaps](docs/STACK_LICENSES.md)
-- [Privacy review draft](docs/PRIVACY.md)
-- [Sources and AI assistance disclosure](docs/SOURCES_AND_ACKNOWLEDGMENTS.md)
-
-## Folder structure
-
-```text
-EQUIPTRACK/
-├── backend/
-│   ├── app/                 # FastAPI routes, config, ORM, catalog service, seed
-│   ├── migrations/          # Alembic and immutable PostgreSQL schema revision
-│   └── tests/               # HTTP contracts and opt-in PostgreSQL integration
-├── frontend/
-│   └── src/                 # React catalog, API client, responsive Tailwind/CSS
-├── infra/
-│   ├── nginx/               # HTTPS reverse proxy
-│   ├── postgres/            # Separate runtime role initialization
-│   └── certs/               # Ignored local certificates and keys
-├── scripts/                 # Certificate generation, curl smoke, backup/restore
-├── tests/performance/       # Phase 1 k6 read draft; authenticated workloads remain
-├── docs/                    # Requirements, diagrams, decisions and evidence
-├── backups/                 # Ignored local database dumps
-├── test-results/            # Ignored local test/performance artifacts
-├── .env.example
-└── compose.yaml             # Separate presentation, application, and data tiers
-```
-
-## Run with the required infrastructure
-
-For a fresh Ubuntu WSL2 setup with Docker Engine, Compose and mkcert, follow the [installation guide](docs/INSTALLATION.md). Then run these commands from the project root in **WSL Bash**:
+From the repository root in Bash:
 
 ```bash
 test -f .env || cp .env.example .env
-# If you just copied the example, replace both passwords and matching URL passwords.
+```
+
+For a new `.env`, replace both placeholder passwords with distinct random URL-safe values. Match the app password in `DATABASE_URL` and the owner password in `MIGRATION_DATABASE_URL`. If the browser URL changes, set `APP_ORIGIN` to the exact new HTTPS origin.
+
+```bash
+mkcert -install
 bash scripts/dev-certs.sh
+docker compose config --quiet
 docker compose up --build -d --wait --wait-timeout 180
 docker compose --profile tools run --rm seed
 docker compose --profile tools run --rm seed python -m app.seed_accounts
 CURL_CA_BUNDLE="$(mkcert -CAROOT)/rootCA.pem" bash scripts/smoke.sh
 ```
 
-Open **https://localhost:8443** and sign in as `student@example.invalid`, `faculty@example.invalid` or `custodian@example.invalid` with the password shown by the first provisioning run. Save generated passwords privately. Set `APP_ORIGIN` to the exact browser origin if you change the host or port. Interactive API docs are at **https://localhost:8443/api/docs**.
+Open **https://localhost:8443** in a browser that trusts the development CA. A Windows browser may require importing the public CA generated in WSL. Compose applies the Alembic migrations before the API starts. Use `docker compose stop` to stop the stack while keeping the database.
 
-For the existing deployment on this laptop, see [how to resume and test it](docs/PHASE5.md#resume-on-this-laptop).
+## Synthetic test accounts
 
-## Run the installed local checks (PowerShell)
+| Email | Role | Password |
+| --- | --- | --- |
+| `student@example.invalid` | Student borrower | Generated by the demo account seed |
+| `faculty@example.invalid` | Faculty borrower | Generated by the demo account seed |
+| `custodian@example.invalid` | Custodian | Generated by the demo account seed |
 
-```powershell
-Set-Location C:\Users\bryan\Desktop\EQUIPTRACK\backend
-..\.venv\Scripts\python.exe -m pytest -q
-Set-Location ..\frontend
-npm run build
+Save the passwords displayed on the first account seed run. Re-running the seed preserves existing accounts and passwords. Sign in as a borrower, request an available item with a valid borrowing window, then sign in as the custodian in a separate browser session to approve it. Release it within the allowed window, record its return and check the borrower’s request history.
+
+## Repository layout
+
+| Path | Contents |
+| --- | --- |
+| `frontend/` | React/Vite presentation tier, local assets and container configuration |
+| `backend/app/` | FastAPI routes, SQLAlchemy models, and synthetic catalog and account seeds |
+| `backend/migrations/` | Alembic revisions and PostgreSQL schema SQL |
+| `infra/` | Nginx gateway, PostgreSQL role initialization and optional Gmail relay |
+| `scripts/` | Certificate setup, smoke checks, backup/restore and performance runner |
+| `backend/tests/`, `tests/` | Backend checks, Gmail relay tests and k6 workloads |
+| `docs/`, `evidence/` | System guides, API contract and historical project evidence |
+
+## Test and operate
+
+- API contract and interactive docs. [OpenAPI guide](docs/API.md)
+- Backend, frontend and k6 commands. [Testing guide](docs/TESTING.md)
+- Database design and schema. [Database guide](docs/DATABASE.md)
+- Optional deployment. [Render guide](docs/RENDER.md)
+
+With the stack running, create a backup and restore it into a new database:
+
+```bash
+bash scripts/backup.sh
+bash scripts/restore.sh backups/ACTUAL_FILE.dump equiptrack_restore_drill1
 ```
 
-The catalog never falls back to hardcoded browser records. When PostgreSQL is unavailable, it displays a retryable connection error. API tests with database doubles do not count as PostgreSQL or full-system acceptance. No load-test measurements have been fabricated.
-
-For the live walkthrough, follow the [defense rehearsal guide](docs/DEFENSE.md).
+Use the path printed by the backup script. The restore target must be unused. [Backup and restore verification](docs/INSTALLATION.md#backup-and-safe-restore)
 
 ## License
 
-EquipTrack's original source code and documentation use the [MIT License](LICENSE). The course brief and third-party components retain their respective terms. The [stack and license inventory](docs/STACK_LICENSES.md) records the dependencies and their sources.
+The original project uses the MIT License. The dependency inventory and bundled notices describe third-party terms. [LICENSE](LICENSE) · [Stack licenses](docs/STACK_LICENSES.md)
