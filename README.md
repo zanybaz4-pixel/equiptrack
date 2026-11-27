@@ -2,6 +2,8 @@
 
 EquipTrack tracks equipment borrowing and returns for a synthetic demonstration of Bicol University College of Industrial Technology’s Mechanical Technology Department. Borrowers check availability, submit requests and review their history. Custodians manage inventory and accounts, decide requests, release equipment and record returns.
 
+**Hosted demo** [Open EquipTrack on Render](https://equiptrack-5r6t.onrender.com/)
+
 ## Prerequisites
 
 Use Linux or Ubuntu on WSL2 with Docker Engine, Docker Compose, Bash, curl and mkcert. The [installation guide](docs/INSTALLATION.md) covers WSL2, certificate trust and optional LAN access.
