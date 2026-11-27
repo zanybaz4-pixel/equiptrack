@@ -1,12 +1,5 @@
 # Requirements specification
 
-Primary academic reference: [MIS 215 Term Project Brief](MIS215_TermProject_Brief.pdf), especially scope pp. 4–7 and R1–R7 pp. 7–12. [BRIEF_ALIGNMENT.md](BRIEF_ALIGNMENT.md) tracks minimums and gaps. The brief permits 3–5 core transactions; EquipTrack retains the user's exact five. REST/HTTPS is proposed **Option A**, with no FIC approval yet claimed.
-
-## Organization and evidence
-
-**Bicol Learning Academy** is an invented school in the Bicol Region, Philippines. The name, rooms, asset codes and records in this repository are synthetic. It is not a claim about an existing school. Student/faculty borrower access and the reservation rules below are project design assumptions requiring stakeholder approval.
-
-DepEd SDO Valenzuela's published [ASSETS description](https://sites.google.com/deped.gov.ph/assetmanagement/s/assets) documents tracking issuance and supporting borrowing, returning and transfer through forms. This supports the general need for custody tracking; it is not a Bicol school policy or a mandate for EquipTrack's exact state machine. DepEd's [2023 delegation order](https://www.deped.gov.ph/wp-content/uploads/2023/01/DO_s2023_001.pdf) documents roles and accountability forms; it does not prescribe our student borrowing rules. See the source register for the limits of these references.
 
 ## Exactly five core business transactions
 
